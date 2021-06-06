@@ -1,0 +1,1440 @@
+//***************************************************************************************
+//**************************************************************************************
+//****************************ALTIN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+public class Altin extends Obje{
+    
+    public Altin(){
+        super();
+        setPuan(5);
+    }
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************ALTIN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************AZMAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+public class Azman extends Dusman{
+    //Azman Gargamelin üstünden atlayamaz
+    public Azman() {
+    }
+
+    public Azman(int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz, String kapi) {
+        super(OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz, kapi);
+    }
+
+    
+    
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************AZMAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+//***************************************************************************************
+//**************************************************************************************
+//****************************DUSMAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+import java.util.ArrayList;
+
+public class Dusman extends Karakter {
+
+    private String kapi;
+
+    public Dusman() {
+
+    }
+
+    public Dusman(int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz, String kapi) {
+        super(OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz);
+        this.kapi = kapi;
+    }
+
+    @Override
+    public void enKisaYol() {
+    }
+    private int[][] labirent;
+    private int[][] komsuluk_matrisi_kopya;
+    private ArrayList<Yol> yol_liste = new ArrayList<Yol>();
+    private ArrayList<Integer> takipYolu = new ArrayList<>();
+
+    public void dijkstra(int[][] komsuluk_matrisi, int kaynak_dugum) {
+        int dugum_sayisi = komsuluk_matrisi.length;
+        boolean[] dugum_ziyaret_edildi_mi = new boolean[dugum_sayisi];
+        int[] mesafe = new int[dugum_sayisi];
+        for (int i = 0; i < dugum_sayisi; i++) {
+            dugum_ziyaret_edildi_mi[i] = false;
+            mesafe[i] = Integer.MAX_VALUE;
+        }
+        mesafe[kaynak_dugum] = 0;
+        //KAYNAK KÖŞEYE MESAFE KENDİSİNE MESAVEDİR VE BU SIFIRDIR
+        for (int i = 0; i < dugum_sayisi; i++) {
+            //KAYNAK KÖŞEYE KOMŞU OLAN ZİYARET EDİLMEMİŞ EN AZ MESAFEDE OLAN KÖŞELERİ BULUN      
+            //İLK DEFA U KAYNAK KÖŞE OLACAK VE MESAFE DİZİSİ KAYNAK KÖŞEYE KOMŞU OLAN KÖŞENİN MESAFESİYLE GÜNCELLENECEKTİR
+            int u = min_uzaklık_bul(mesafe, dugum_ziyaret_edildi_mi);
+            //U SATIR VE V  SÜTUNDUR
+            dugum_ziyaret_edildi_mi[u] = true;
+            //ŞİMDİ TÜMK KOMŞU KÖŞE UZAKLIKLARINI GÜNCELLİYORUZ
+            for (int v = 0; v < dugum_sayisi; v++) {
+                //graph[u][v] != 0 -> DOGRUDAN BİR KENAR OLMALI
+                if (!dugum_ziyaret_edildi_mi[v] && komsuluk_matrisi[u][v] != 0 && (mesafe[u] + komsuluk_matrisi[u][v] < mesafe[v])) {
+
+                    mesafe[v] = mesafe[u] + komsuluk_matrisi[u][v];
+                    yol_liste.add(new Yol(u, v));
+                }
+            }
+        }
+    }
+
+    private int min_uzaklık_bul(int[] mesafe, boolean[] dugum_ziyaret_edildi_mi) {
+        int min_uzaklik = Integer.MAX_VALUE;
+        int dugume_min_mesafe = -1;
+        for (int i = 0; i < mesafe.length; i++) {
+            //KÖŞE ZİYARET EDİLMEMİŞ OLMALI VE KÖŞEYE YOL EN KÜÇÜK OLMALI
+            //BU BİR DİZİNİN MİNİMUM ELEMANINI BULMAYA BENZER
+            if (!dugum_ziyaret_edildi_mi[i] && mesafe[i] <= min_uzaklik) {
+                min_uzaklik = mesafe[i];
+                dugume_min_mesafe = i;
+
+            }
+        }
+        return dugume_min_mesafe;
+    }
+
+    public ArrayList<Integer> yol_dondur(int varilacak_yer) {
+
+        ArrayList<Integer> yol = new ArrayList<>();
+        for (int i = 0; i < yol_liste.size(); i++) {
+            if (yol_liste.get(i).getSon_yol() == varilacak_yer) {
+                yol.add(0, yol_liste.get(i).getSon_yol());
+                varilacak_yer = yol_liste.get(i).getIlk_yol();
+                i = -1;
+            }
+        }
+        yol.add(0, varilacak_yer);
+        return yol;
+    }
+
+    public void yol_ciz(int merkez_dugum, int varilacak_yer) {
+        int[][] komsuluk_matrisi = new int[143][143];
+        Metin metin = new Metin();
+        labirent = metin.harita_dondur();
+        int k = 0;
+
+        for (int i = 0; i < labirent.length; i++) {
+            for (int j = 0; j < labirent[0].length; j++) {
+                komsuluk_matrisi[k][0] = labirent[i][j];
+                k++;
+            }
+        }
+        for (int i = 0; i < komsuluk_matrisi.length; i++) {
+            if (komsuluk_matrisi[i][0] == 1) {
+                if (i + 1 < komsuluk_matrisi.length) {
+                    if (komsuluk_matrisi[i + 1][0] == 1) {
+                        komsuluk_matrisi[i][i + 1] = 1;
+                    }
+                }
+                if (i - 1 > 0) {
+                    if (komsuluk_matrisi[i - 1][0] == 1) {
+                        komsuluk_matrisi[i][i - 1] = 1;
+                    }
+                }
+                if (i + labirent[0].length < komsuluk_matrisi.length) {
+                    if (komsuluk_matrisi[i + labirent[0].length][0] == 1) {
+                        komsuluk_matrisi[i][i + labirent[0].length] = 1;
+                    }
+                }
+                if (i - labirent[0].length > 0) {
+                    if (komsuluk_matrisi[i - labirent[0].length][0] == 1) {
+                        komsuluk_matrisi[i][i - labirent[0].length] = 1;
+                    }
+                }
+
+            }
+        }
+        k = 0;
+        for (int i = 0; i < labirent.length; i++) {
+            for (int j = 0; j < labirent[0].length; j++) {
+                komsuluk_matrisi[k][0] = 0;
+                k++;
+            }
+        }
+        Dusman t = new Dusman();
+        t.dijkstra(komsuluk_matrisi, merkez_dugum);
+        takipYolu = t.yol_dondur(varilacak_yer);
+
+    }
+
+    public ArrayList<Integer> getTakipYolu() {
+        return takipYolu;
+    }
+
+    public void setTakipYolu(ArrayList<Integer> takipYolu) {
+        this.takipYolu = takipYolu;
+    }
+
+    public String getKapi() {
+        return kapi;
+    }
+
+    public void setKapi(String kapi) {
+        this.kapi = kapi;
+    }
+
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************DUSMAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************GARGAMEL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Gargamel extends Dusman{
+    //Gargamel Azmanın üstünden atlayabilir
+    public Gargamel(){
+        
+    }
+
+    public Gargamel(int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz, String kapi) {
+        super(OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz, kapi);
+    }
+    
+
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************GARGAMEL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************GOZLUKLU CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Gozluklu extends Oyuncu {
+
+    public Gozluklu(int puan, int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz) {
+        super(puan, OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz);
+    }
+
+    
+
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************GOZLUKLU CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************KARAKTER CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public abstract class Karakter extends Lokasyon{
+    private int OyuncuID;
+    private String OyuncuAdi;
+    private String OyuncuTur;
+    
+    private String resim_yolu;
+    private int hiz;
+    
+    public Karakter(){
+        
+    }
+    public Karakter(int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu,int hiz) {
+        this.OyuncuID = OyuncuID;
+        this.OyuncuAdi = OyuncuAdi;
+        this.OyuncuTur = OyuncuTur;
+        setX(x);
+        setY(y);
+        this.resim_yolu=resim_yolu;
+        this.hiz=hiz;
+    }
+
+    public int getOyuncuID() {
+        return OyuncuID;
+    }
+
+    public void setOyuncuID(int OyuncuID) {
+        this.OyuncuID = OyuncuID;
+    }
+
+    public String getOyuncuAdi() {
+        return OyuncuAdi;
+    }
+
+    public void setOyuncuAdi(String OyuncuAdi) {
+        this.OyuncuAdi = OyuncuAdi;
+    }
+
+    public String getOyuncuTur() {
+        return OyuncuTur;
+    }
+
+    public void setOyuncuTur(String OyuncuTur) {
+        this.OyuncuTur = OyuncuTur;
+    }
+
+    
+
+    public String getResim_yolu() {
+        return resim_yolu;
+    }
+
+    public void setResim_yolu(String resim_yolu) {
+        this.resim_yolu = resim_yolu;
+    }
+
+    public int getHiz() {
+        return hiz;
+    }
+
+    public void setHiz(int hiz) {
+        this.hiz = hiz;
+    }
+    
+    public  abstract void enKisaYol();
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************KARAKTER CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************LOKASYON CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Lokasyon {
+
+    private int x;
+    private int y;
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************LOKASYON CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************MANTAR CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+public class Mantar extends Obje{
+    
+    public Mantar(){
+        super();
+        setPuan(50);
+    }
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************MANTAR CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************METİN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Metin {
+
+    static String dusman_1 = "";
+    static String dusman_2 = "";
+    static String dusman_1_kapi = "";
+    static String dusman_2_kapi = "";
+
+    public int[][] harita_dondur() {
+        String harita = "";
+
+        Scanner scanner = null;
+        try {
+            scanner = new Scanner(new FileReader("harita.txt"));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Metin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        while (scanner.hasNextLine()) {
+            harita += scanner.nextLine();
+            harita += "\n";
+        }
+
+        harita = harita.toLowerCase(Locale.ENGLISH);
+        boolean sayim_bitti = false;
+        //SATIR ADET HESABİ
+        int satir_adet = 0;
+        int sutun_adet = 0;
+
+        for (int i = 0; i < harita.length(); i++) {
+            if (harita.charAt(i) == '0') {
+                for (int j = i; j < harita.length(); j++) {
+                    if (harita.charAt(j) != '\n') {
+                        sutun_adet++;
+                    }
+                    if (harita.charAt(j) == '\n') {
+                        satir_adet++;
+                    }
+                }
+                sayim_bitti = true;
+            }
+            if (sayim_bitti == true) {
+                break;
+            }
+        }
+        //SUTUNDA BOŞLUKLARI SAYDIĞINDAN
+        sutun_adet = ((sutun_adet / 11) + 1) / 2;
+        int k = 0;
+        int m = 0;
+        int[][] harita_matris = new int[satir_adet][sutun_adet];
+
+        for (int i = 0; i < harita.length(); i++) {
+            String sayi = "";
+            sayi += harita.charAt(i);
+            if (sayi.equals("1") || sayi.equals("0")) {
+                harita_matris[k][m] = Integer.valueOf(sayi);
+                m++;
+                if (m == sutun_adet) {
+                    m = 0;
+                    k++;
+                }
+                if (k == satir_adet) {
+                    break;
+                }
+            }
+        }
+        return harita_matris;
+    }
+
+    public String[][] dusman_dondur() {
+        try {
+            Scanner scanner = new Scanner(new FileReader("harita.txt"));
+            int i = 0;
+            String harita = "";
+            String[] Array;
+            while (scanner.hasNextLine()) {
+                harita = scanner.nextLine();
+                if (harita.charAt(0) != '0') {
+                    if (i == 0) {
+                        Array = harita.split(":");
+                        dusman_1_kapi = Array[2];
+                        Array = Array[1].split(",");
+                        dusman_1 = Array[0];
+                    } else if (i == 1) {
+                        Array = harita.split(":");
+                        dusman_2_kapi = Array[2];
+                        Array = Array[1].split(",");
+                        dusman_2 = Array[0];
+                        break;
+                    }
+                }
+                i++;
+
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Metin.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String dusman_dizi[][] = new String[2][2];
+        dusman_dizi[0][0] = dusman_1;
+        dusman_dizi[0][1] = dusman_1_kapi;
+        dusman_dizi[1][0] = dusman_2;
+        dusman_dizi[1][1] = dusman_2_kapi;
+        return dusman_dizi;
+    }
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************METİN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************OBJE CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+public class Obje extends Lokasyon{
+    
+    public Obje(){
+        
+    }
+    
+    private int puan;
+    private String resim_yolu;
+
+    
+    public int getPuan() {
+        return puan;
+    }
+
+    
+    public void setPuan(int puan) {
+        this.puan = puan;
+    }
+
+    
+    public String getResim_yolu() {
+        return resim_yolu;
+    }
+
+    
+    public void setResim_yolu(String resim_yolu) {
+        this.resim_yolu = resim_yolu;
+    }
+    
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************OBJE CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.PopupMenu;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+import javax.imageio.ImageIO;
+import javax.imageio.stream.FileImageInputStream;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.Timer;
+
+public class Oyun extends JLabel implements KeyListener, ActionListener {
+
+    private static Metin metin = new Metin();
+    private static String[][] dusmanlar = metin.dusman_dondur();
+    private int[][] labirent = metin.harita_dondur();
+    Puan puan = new Puan();
+
+    private static int[][] yol_azman;
+    private int aKapiX = 3;
+    private int aKapiY = 0;
+    private int bKapiX = 10;
+    private int bKapiY = 0;
+    private int cKapiX = 0;
+    private int cKapiY = 5;
+    private int dKapiX = 3;
+    private int dKapiY = 10;
+    private int cikisX = 12;
+    private int cikisY = 7;
+    private String azmanKapi;
+    private String gargamelKapi;
+    private Timer timer = new Timer(5, this);
+
+    private boolean oyun_bittimi = false;
+    private static Dusman dusman = new Dusman();
+    private Oyuncu secilen_karakter;
+    private Gargamel gargamel;
+    private Azman azman;
+    private int sirin_x = 360;
+    private int sirin_y = 300;
+    private int hareket_x = 60;
+    private int hareket_y = 60;
+    private BufferedImage oyuncu_image;
+    private BufferedImage gargamel_image = null;
+    private BufferedImage azman_image = null;
+    private BufferedImage sirine=ImageIO.read(new FileImageInputStream(new File("sirine.png")));;
+    private int gargamelSecilenX = Integer.MAX_VALUE;
+    private int azmanSecilenX = Integer.MAX_VALUE;
+    private int gargamelSecilenY = Integer.MAX_VALUE;
+    private int azmanSecilenY = Integer.MAX_VALUE;
+    private BufferedImage altin_resim = ImageIO.read(new FileImageInputStream(new File("coin.png")));
+    private BufferedImage mantar_resim = ImageIO.read(new FileImageInputStream(new File("mantar.png")));
+    long altinBaslangic = System.currentTimeMillis();
+    long mantarBaslangic = System.currentTimeMillis();
+    int atlanan_y = -1;
+    int atlanan_x = -1;
+
+    public Oyun() throws IOException {
+
+        timer.start();
+        Scanner scanner = new Scanner(System.in);
+        String sayi = JOptionPane.showInputDialog(this, "Gozluklu İçin 1'i(Gözlüklü Şirin Hızı:2)\n"
+                + "Tembel İçin 2'yi(Tembel Şirin Hızı:1)\n"
+                + "Tuşlayınız...");
+        Gozluklu gozluklu = new Gozluklu(20, 1234, "gozluklu", "kullanici", (sirin_x / 60), (sirin_y / 60), "gozluk.png", 2);
+        Tembel tembel = new Tembel(20, 1235, "tembel", "kullanici", (sirin_x / 60), (sirin_y / 60), "tembel.png", 1);
+
+        //--------------------------------------
+        //KAPI BELIRLEME VE KAPI ATAMA ISLEMLERI
+        //--------------------------------------
+        if (dusmanlar[0][0].equals("Gargamel")) {
+            gargamelKapi = dusmanlar[0][1];
+            if (dusmanlar[0][1].equals("A")) {
+                gargamelSecilenX = aKapiX;
+                gargamelSecilenY = aKapiY;
+            } else if (dusmanlar[0][1].equals("B")) {
+                gargamelSecilenX = bKapiX;
+                gargamelSecilenY = bKapiY;
+            } else if (dusmanlar[0][1].equals("C")) {
+                gargamelSecilenX = cKapiX;
+                gargamelSecilenY = cKapiY;
+            } else {
+                gargamelSecilenX = dKapiX;
+                gargamelSecilenY = dKapiY;
+            }
+        } else if (dusmanlar[0][0].equals("Azman")) {
+            azmanKapi = dusmanlar[0][1];
+            if (dusmanlar[0][1].equals("A")) {
+                azmanSecilenX = aKapiX;
+                azmanSecilenY = aKapiY;
+            } else if (dusmanlar[0][1].equals("B")) {
+                azmanSecilenX = bKapiX;
+                azmanSecilenY = bKapiY;
+            } else if (dusmanlar[0][1].equals("C")) {
+                azmanSecilenX = cKapiX;
+                azmanSecilenY = cKapiY;
+            } else {
+                azmanSecilenX = dKapiX;
+                azmanSecilenY = dKapiY;
+            }
+        }
+        if (dusmanlar[1][0] != null) {
+            if (dusmanlar[1][0].equals("Gargamel")) {
+                gargamelKapi = dusmanlar[1][1];
+                if (dusmanlar[1][1].equals("A")) {
+                    gargamelSecilenX = aKapiX;
+                    gargamelSecilenY = aKapiY;
+                } else if (dusmanlar[1][1].equals("B")) {
+                    gargamelSecilenX = bKapiX;
+                    gargamelSecilenY = bKapiY;
+                } else if (dusmanlar[1][1].equals("C")) {
+                    gargamelSecilenX = cKapiX;
+                    gargamelSecilenY = cKapiY;
+                } else {
+                    gargamelSecilenX = dKapiX;
+                    gargamelSecilenY = dKapiY;
+                }
+            } else if (dusmanlar[1][0].equals("Azman")) {
+                azmanKapi = dusmanlar[1][1];
+                if (dusmanlar[1][1].equals("A")) {
+                    azmanSecilenX = aKapiX;
+                    azmanSecilenY = aKapiY;
+                } else if (dusmanlar[1][1].equals("B")) {
+                    azmanSecilenX = bKapiX;
+                    azmanSecilenY = bKapiY;
+                } else if (dusmanlar[1][1].equals("C")) {
+                    azmanSecilenX = cKapiX;
+                    azmanSecilenY = cKapiY;
+                } else {
+                    azmanSecilenX = dKapiX;
+                    azmanSecilenY = dKapiY;
+                }
+            }
+        }
+        Gargamel gargamel_olusum = new Gargamel(12345, "Gargamel", "Dusman", gargamelSecilenX, gargamelSecilenY, "gargamel.png", 2, gargamelKapi);
+        Azman azman_olusum = new Azman(1456, "Azman", "Dusman", azmanSecilenX, azmanSecilenY, "azman.png", 1, azmanKapi);
+        //----------------------------
+        //RESIM ATAMA ISLEMLERI
+        //---------------------------
+        if (dusmanlar[0][0].equals("Gargamel")) {
+            gargamel_image = ImageIO.read(new FileImageInputStream(new File(gargamel_olusum.getResim_yolu())));
+        } else if (dusmanlar[0][0].equals("Azman")) {
+            azman_image = ImageIO.read(new FileImageInputStream(new File(azman_olusum.getResim_yolu())));
+        }
+
+        if (dusmanlar[1][0].equals("Gargamel")) {
+            gargamel_image = ImageIO.read(new FileImageInputStream(new File(gargamel_olusum.getResim_yolu())));
+        } else if (dusmanlar[1][0].equals("Azman")) {
+            azman_image = ImageIO.read(new FileImageInputStream(new File(azman_olusum.getResim_yolu())));
+        }
+        //-------------------------------
+        //Dusman atamalari
+        //-------------------------------
+        azman = azman_olusum;
+        gargamel = gargamel_olusum;
+        //-----------------------
+        //karakter secimi
+        //----------------------
+        int secim = Integer.parseInt(sayi);
+        if (secim == 1) {
+            secilen_karakter = gozluklu;
+        } else if (secim == 2) {
+            secilen_karakter = tembel;
+        }
+
+        if (secim == 1 || secim == 2) // secim yapildiginda sureyi baslatir.
+        {
+            altinBaslangic = System.currentTimeMillis();
+            mantarBaslangic = System.currentTimeMillis();
+        }
+
+        secilen_karakter.setX((labirent[0].length / 2));
+        secilen_karakter.setY((labirent.length / 2));
+        oyuncu_image = ImageIO.read(new FileImageInputStream(new File(secilen_karakter.getResim_yolu())));
+
+    }
+
+    int kaldirilanAltin = 0;
+    int kaldirilanMantar = 0;
+    int altinSure = (int) (1 + Math.random() * 10);
+    int mantarSure = (int) (1 + Math.random() * 20);
+
+    ArrayList<Altin> altinlar = new ArrayList<Altin>();
+    ArrayList<Mantar> mantarlar = new ArrayList<Mantar>();
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g); //To change body of generated methods, choose Tools | Templates.
+        
+        for (int i = 0; i < labirent.length; i++) {
+            for (int j = 0; j < labirent[0].length; j++) {
+                Color color;
+                if (labirent[i][j] == 0) {
+                    color = Color.GRAY;
+                } else if (labirent[i][j] == 1) {
+                    color = Color.WHITE;
+                } else {
+                    color = Color.BLUE;
+                }
+                g.setColor(color);
+                g.fillRect(60 * j, 60 * i, 60, 60);
+                g.setColor(Color.BLACK);
+                g.drawRect(60 * j, 60 * i, 60, 60);
+            }
+        }
+
+        if (azman_image != null) {
+            azman.yol_ciz(azman.getY() * 13 + azman.getX(), secilen_karakter.getY() * 13 + secilen_karakter.getX());
+
+            for (int i = 0; i < azman.getTakipYolu().size(); i++) {
+                g.setColor(Color.GREEN);
+                int x = azman.getTakipYolu().get(i) % 13;
+                int y = azman.getTakipYolu().get(i) / 13;
+                g.fillRect(x * 60, y * 60, 60, 60);
+                g.setColor(Color.BLACK);
+                g.drawRect(x * 60, y * 60, 60, 60);
+            }
+
+        }
+        if (gargamel_image != null) {
+
+            gargamel.yol_ciz(gargamel.getY() * 13 + gargamel.getX(), secilen_karakter.getY() * 13 + secilen_karakter.getX());
+
+            for (int i = 0; i < gargamel.getTakipYolu().size(); i++) {
+                g.setColor(Color.blue);
+                int x = gargamel.getTakipYolu().get(i) % 13;
+                int y = gargamel.getTakipYolu().get(i) / 13;
+                g.fillRect(x * 60, y * 60, 60, 60);
+                g.setColor(Color.BLACK);
+                g.drawRect(x * 60, y * 60, 60, 60);
+            }
+
+            long altinBitis = System.currentTimeMillis();
+            double altinSayac = (double) (altinBitis - altinBaslangic) / 1000;
+            long mantarBitis = System.currentTimeMillis();
+            double mantarSayac = (double) (mantarBitis - mantarBaslangic) / 1000;
+
+            if (altinSayac >= altinSure && altinSayac <= altinSure + 5) { // altinin aktif oldugu zaman araligi
+
+                while (altinlar.size() < 5 && kaldirilanAltin == 0) // altinlari olusturma
+                {
+                    int random_y = (int) (Math.random() * 11);
+                    int random_x = (int) (Math.random() * 13);
+
+                    if (labirent[random_y][random_x] == 1 && varMi(altinlar, random_x, random_y) == false && varMi(altinlar, mantarlar, random_x, random_y) == false && (60 * random_x != sirin_x && 60 * random_y != sirin_y)) {
+                        Altin altin = new Altin();
+                        altin.setX(random_x);
+                        altin.setY(random_y);
+                        altinlar.add(altin);
+                    }
+                }
+
+                if (altinlar.size() + kaldirilanAltin == 5) // altinlarin ekranda gösterilmesi
+                {
+                    for (int i = 0; i < altinlar.size(); i++) {
+                        g.drawImage(altin_resim, altinlar.get(i).getX() * 60, altinlar.get(i).getY() * 60, 60, 60, this);
+                    }
+                }
+
+                if (varMi(altinlar, sirin_x / 60, sirin_y / 60)) // oyuncunun altini yemesi
+                {
+                    int iptal = altinIptal(altinlar, sirin_x / 60, sirin_y / 60);
+                    secilen_karakter.setPuan(secilen_karakter.getPuan() + altinlar.get(iptal).getPuan());
+                    altinlar.remove(iptal);
+                    kaldirilanAltin++;
+                }
+
+                if (varMi(altinlar, atlanan_x / 60, atlanan_y / 60)) // gozluklunun ustunden atladigi altini yemesi
+                {
+                    int iptal = altinIptal(altinlar, atlanan_x / 60, atlanan_y / 60);
+                    secilen_karakter.setPuan(secilen_karakter.getPuan() + altinlar.get(iptal).getPuan());
+                    altinlar.remove(iptal);
+                    kaldirilanAltin++;
+                    atlanan_y = -1;
+                    atlanan_x = -1;
+                }
+
+            }
+
+            if (altinSayac >= altinSure + 5) // altinlarin suresi dolduktan sonra ekrandan kaybolup yeni olusacagi zamanin belirlenmesi
+            {
+                kaldirilanAltin = 0;
+
+                for (int i = 0; i < altinlar.size(); i++) {
+                    altinlar.remove(0);
+                }
+
+                altinBaslangic = System.currentTimeMillis();
+
+                altinSure = (int) (1 + Math.random() * 10);
+                //System.out.println("\naltinSure: "+altinSure);
+            }
+
+            if (mantarSayac >= mantarSure && mantarSayac <= mantarSure + 7) { // mantarin aktif oldugu zaman araligi
+
+                while (mantarlar.size() == 0 && kaldirilanMantar == 0) // mantar olusturma
+                {
+                    int random_y = (int) (Math.random() * 11);
+                    int random_x = (int) (Math.random() * 13);
+
+                    if (labirent[random_y][random_x] == 1 && varMi(altinlar, random_x, random_y) == false && (60 * random_x != sirin_x && 60 * random_y != sirin_y)) {
+                        Mantar mantar = new Mantar();
+                        mantar.setX(random_x);
+                        mantar.setY(random_y);
+                        mantarlar.add(mantar);
+                    }
+                }
+
+                if (kaldirilanMantar == 0) // mantarin ekranda gosterilmesi
+                {
+                    g.drawImage(mantar_resim, mantarlar.get(0).getX() * 60, mantarlar.get(0).getY() * 60, 60, 60, this);
+                }
+
+                if (mantarlar.size() == 1) {
+                    if (mantarlar.get(0).getY() == sirin_y / 60 && mantarlar.get(0).getX() == sirin_x / 60) // oyuncunun mantari yemesi
+                    {
+                        secilen_karakter.setPuan(secilen_karakter.getPuan() + mantarlar.get(0).getPuan());
+                        mantarlar.remove(0);
+                        kaldirilanMantar++;
+                    }
+                }
+
+                if (mantarlar.size() == 1) {
+                    if (mantarlar.get(0).getX() == atlanan_x / 60 && mantarlar.get(0).getY() == atlanan_y / 60) // gozluklunun ustunden atladigi mantari yemesi
+                    {
+                        secilen_karakter.setPuan(secilen_karakter.getPuan() + mantarlar.get(0).getPuan());
+                        mantarlar.remove(0);
+                        kaldirilanMantar++;
+                        atlanan_y = -1;
+                        atlanan_x = -1;
+                    }
+                }
+
+            }
+
+            if (mantarSayac >= mantarSure + 7) // mantarin suresi dolduktan sonra ekrandan kaybolmasi ve yeni olusacagi zamanin belirlenmesi
+            {
+                kaldirilanMantar = 0;
+
+                if (mantarlar.size() == 1) {
+                    mantarlar.remove(0);
+                }
+
+                mantarBaslangic = System.currentTimeMillis();
+
+                mantarSure = (int) (1 + Math.random() * 20);
+                //System.out.println("\naltinSure: "+altinSure);
+            }
+
+        }
+        if (azman_image != null) {
+            g.drawImage(azman_image, azman.getX() * 60, azman.getY() * 60, azman_image.getWidth() / 5, azman_image.getHeight() / 5, this);
+        }
+        if (gargamel != null) {
+            g.drawImage(gargamel_image, gargamel.getX() * 60, gargamel.getY() * 60, gargamel_image.getWidth() / 5, gargamel_image.getHeight() / 5, this);
+        }
+        g.drawImage(oyuncu_image, sirin_x, sirin_y, oyuncu_image.getWidth() / 5, oyuncu_image.getHeight() / 5, this);
+        //Puan Gösterme yeri
+        g.setColor(Color.WHITE);
+        g.fillRect(850, 100, 200, 100);
+        g.setColor(Color.BLACK);
+        g.drawString(puan.puani_goster(secilen_karakter), 890, 155);
+        g.drawImage(sirine,13*60,7*60, sirine.getWidth()/5,sirine.getHeight()/5,this);
+    }
+
+    @Override
+    public void repaint() {
+        super.repaint(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        int c = e.getKeyCode();
+        if (c == KeyEvent.VK_LEFT) {
+            if (sirin_x <= 0) {
+                sirin_x = 0;
+                secilen_karakter.setX(0);
+            } else {
+                if (labirent[secilen_karakter.getY()][secilen_karakter.getX() - 1] == 1) {
+                    if (secilen_karakter instanceof Gozluklu) {
+                        if (labirent[secilen_karakter.getY()][secilen_karakter.getX() - 2] == 1) {
+                            atlanan_x = sirin_x - 60;
+                            atlanan_y = sirin_y;
+                            sirin_x -= 2 * hareket_x;
+                            secilen_karakter.setX(secilen_karakter.getX() - 2);
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                            kazandi_mi();
+                            if (azman_image != null) {
+                                dusman_hareket(azman, "sol");
+                            }
+                            if (gargamel_image != null) {
+                                dusman_hareket(gargamel, "sol");
+                            }
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                        }
+                    } else {
+                        sirin_x -= hareket_x;
+                        secilen_karakter.setX(secilen_karakter.getX() - 1);
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                        kazandi_mi();
+                        if (azman_image != null) {
+                            dusman_hareket(azman, "sol");
+                        }
+                        if (gargamel_image != null) {
+                            dusman_hareket(gargamel, "sol");
+                        }
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                    }
+
+                }
+            }
+        } else if (c == KeyEvent.VK_RIGHT) {
+            if (sirin_x >= 720) {
+                sirin_x = 720;
+                secilen_karakter.setX(12);
+
+            } else {
+                if (labirent[secilen_karakter.getY()][secilen_karakter.getX() + 1] == 1) {
+                    if (secilen_karakter instanceof Gozluklu) {
+                        if (labirent[secilen_karakter.getY()][secilen_karakter.getX() + 2] == 1) {
+                            atlanan_x = sirin_x + 60; //
+                            atlanan_y = sirin_y;   //
+                            sirin_x += 2 * hareket_x;
+                            secilen_karakter.setX(secilen_karakter.getX() + 2);
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                            kazandi_mi();
+                            if (azman_image != null) {
+                                dusman_hareket(azman, "sag");
+                            }
+                            if (gargamel_image != null) {
+                                dusman_hareket(gargamel, "sag");
+                            }
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                        }
+                    } else {
+
+                        sirin_x += hareket_x;
+                        secilen_karakter.setX(secilen_karakter.getX() + 1);
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                        kazandi_mi();
+                        if (azman_image != null) {
+                            dusman_hareket(azman, "sag");
+                        }
+                        if (gargamel_image != null) {
+                            dusman_hareket(gargamel, "sag");
+                        }
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                    }
+
+                }
+
+            }
+        } else if (c == KeyEvent.VK_UP) {
+            if (sirin_y <= 0) {
+                sirin_y = 0;
+                secilen_karakter.setY(0);
+            } else {
+                if (labirent[secilen_karakter.getY() - 1][secilen_karakter.getX()] == 1) {
+                    if (secilen_karakter instanceof Gozluklu) {
+                        if (secilen_karakter.getY() - 2 > 0) {
+                            if (labirent[secilen_karakter.getY() - 2][secilen_karakter.getX()] == 1) {
+
+                                atlanan_x = sirin_x;
+                                atlanan_y = sirin_y - 60;
+                                sirin_y -= 2 * hareket_x;
+                                secilen_karakter.setY(secilen_karakter.getY() - 2);
+                                //**************************
+                                //dusman hareket
+                                //***************************
+                                kazandi_mi();
+                                if (azman_image != null) {
+                                    dusman_hareket(azman, "yuk");
+                                }
+                                if (gargamel_image != null) {
+                                    dusman_hareket(gargamel, "yuk");
+                                }
+                                //**************************
+                                //dusman hareket
+                                //***************************
+                            }
+                        }
+                    } else {
+                        sirin_y -= hareket_y;
+                        secilen_karakter.setY(secilen_karakter.getY() - 1);
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                        kazandi_mi();
+                        if (azman_image != null) {
+                            dusman_hareket(azman, "yuk");
+                        }
+                        if (gargamel_image != null) {
+                            dusman_hareket(gargamel, "yuk");
+                        }
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                    }
+
+                }
+            }
+        } else if (c == KeyEvent.VK_DOWN) {
+            if (sirin_y >= 600) {
+                sirin_y = 600;
+                secilen_karakter.setY(10);
+            } else {
+                if (labirent[secilen_karakter.getY() + 1][secilen_karakter.getX()] == 1) {
+                    if (secilen_karakter instanceof Gozluklu) {
+                        if (labirent[secilen_karakter.getY() + 2][secilen_karakter.getX()] == 1) {
+                            atlanan_x = sirin_x;
+                            atlanan_y = sirin_y + 60;
+                            sirin_y += 2 * hareket_x;
+                            secilen_karakter.setY(secilen_karakter.getY() + 2);
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                            kazandi_mi();
+                            if (azman_image != null) {
+                                dusman_hareket(azman, "asa");
+                            }
+                            if (gargamel_image != null) {
+                                dusman_hareket(gargamel, "asa");
+                            }
+                            //**************************
+                            //dusman hareket
+                            //***************************
+                        }
+                    } else {
+                        sirin_y += hareket_y;
+                        secilen_karakter.setY(secilen_karakter.getY() + 1);
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                        kazandi_mi();
+                        if (azman_image != null) {
+                            dusman_hareket(azman, "asa");
+                        }
+                        if (gargamel_image != null) {
+                            dusman_hareket(gargamel, "asa");
+                        }
+                        //**************************
+                        //dusman hareket
+                        //***************************
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    public void dusman_hareket(Dusman dusman, String yon) {
+        
+        if (oyun_bittimi != true) {
+            if (dusman instanceof Gargamel) {
+                //***********************************************************************
+                //****************************GARGAMEL HAREKETLERİ***********************
+                //***********************************************************************
+                dusman.yol_ciz(dusman.getY() * 13 + dusman.getX(), secilen_karakter.getY() * 13 + secilen_karakter.getX());
+                if (dusman.getX() == secilen_karakter.getX() && dusman.getY() == secilen_karakter.getY()) {
+                    dusman_degdi(dusman);
+                } else {
+                    if (dusman.getTakipYolu().size() >= 3) {
+                        int x = dusman.getTakipYolu().get(2) % 13;
+                        int y = dusman.getTakipYolu().get(2) / 13;
+                        dusman.setX(x);
+                        dusman.setY(y);
+                        if (dusman.getX() == secilen_karakter.getX() && dusman.getY() == secilen_karakter.getY()) {
+                            dusman_degdi(dusman);
+                        }
+                    } else {
+                        if (secilen_karakter instanceof Tembel) {
+                            dusman.setX(secilen_karakter.getX());
+                            dusman.setY(secilen_karakter.getY());
+                            dusman_degdi(dusman);
+                        }
+                    }
+                }
+                //***********************************************************************
+                //****************************GARGAMEL HAREKETLERİ***********************
+                //***********************************************************************
+            } else {
+                //***********************************************************************
+                //******************************AZMAN HAREKETLERİ************************
+                //***********************************************************************
+                dusman.yol_ciz(dusman.getY() * 13 + dusman.getX(), secilen_karakter.getY() * 13 + secilen_karakter.getX());
+                if (dusman.getX() == secilen_karakter.getX() && dusman.getY() == secilen_karakter.getY()) {                   
+                        dusman_degdi(dusman);
+                } else {
+                    if (dusman.getTakipYolu().size() > 0) {
+                        int x = dusman.getTakipYolu().get(1) % 13;
+                        int y = dusman.getTakipYolu().get(1) / 13;
+                        dusman.setX(x);
+                        dusman.setY(y);
+                        if (dusman.getX() == secilen_karakter.getX() && dusman.getY() == secilen_karakter.getY()) {
+                            dusman_degdi(dusman);
+                        }
+                    }
+                }
+
+                //***********************************************************************
+                //******************************AZMAN HAREKETLERİ************************
+                //***********************************************************************
+            }
+        }
+    }
+
+    public void oyun_bittimi() {
+        if (secilen_karakter.getPuan() <= 0) {
+            JOptionPane.showMessageDialog(this, "Oyun Bitti\n"
+                    + "Kaybettiniz......");
+            System.exit(0);
+        }
+    }
+
+    public void dusman_degdi(Dusman dusman) {
+        if (dusman instanceof Gargamel) {
+            secilen_karakter.setPuan(secilen_karakter.getPuan() - 15);
+        } else {
+            secilen_karakter.setPuan(secilen_karakter.getPuan() - 5);
+        }
+        oyun_bittimi();
+        if (dusman.getKapi().equals("A")) {
+            dusman.setX(aKapiX);
+            dusman.setY(aKapiY);
+        } else if (dusman.getKapi().equals("B")) {
+            dusman.setX(bKapiX);
+            dusman.setY(bKapiY);
+        } else if (dusman.getKapi().equals("C")) {
+            dusman.setX(cKapiX);
+            dusman.setY(cKapiY);
+        } else {
+            dusman.setX(dKapiX);
+            dusman.setY(dKapiY);
+        }
+    }
+
+    public void kazandi_mi() {
+        if (secilen_karakter.getX() == cikisX && secilen_karakter.getY() == cikisY) {
+            JOptionPane.showMessageDialog(this, "TEBRİKLER KAZANDINIZ");
+            oyun_bittimi = true;
+            System.exit(0);
+        }
+    }
+
+    public boolean azman_hareket(int x, int y) {
+        if (gargamel.getX() == x && gargamel.getY() == y) {
+            return false;
+        }
+        return true;
+    }
+
+    boolean varMi(ArrayList<Altin> dizi, int x, int y) {
+        for (int i = 0; i < dizi.size(); i++) {
+            if (dizi.get(i).getX() == x && dizi.get(i).getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean varMi(ArrayList<Altin> dizi1, ArrayList<Mantar> dizi2, int x, int y) { // altinin mantar uzerinde olusmasini engellemek amaciyla olusturulmustur.
+
+        for (int i = 0; i < dizi1.size() && dizi2.size() == 1; i++) {
+            if (dizi1.get(i).getX() == dizi2.get(0).getX() && dizi1.get(i).getY() == dizi2.get(0).getY()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public int altinIptal(ArrayList<Altin> dizi, int x, int y) // iptal edilecek altinin indisini dondurur.
+    {
+        for (int i = 0; i < dizi.size(); i++) {
+            if (dizi.get(i).getX() == x && dizi.get(i).getY() == y) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        repaint();
+    }
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUN EKRANI CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+import java.io.IOException;
+import javax.swing.JFrame;
+
+
+public class OyunEkrani extends JFrame{
+    public static void main(String[] args) throws IOException {
+        
+        OyunEkrani ekran=new OyunEkrani();
+        ekran.setTitle("SİRİNLER");
+        ekran.setResizable(false);
+        ekran.setFocusable(false);
+        ekran.setSize(1080,760);
+        ekran.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        Oyun oyun=new Oyun();
+        oyun.requestFocus();
+        oyun.addKeyListener(oyun);
+        oyun.setFocusable(true);
+        oyun.setFocusTraversalKeysEnabled(false);
+        ekran.add(oyun);
+        ekran.setVisible(true);          
+    }
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUN EKRANI CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUNCU CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public abstract class Oyuncu extends Karakter{
+    private int puan;
+    public Oyuncu() {      
+    }
+    
+    public Oyuncu(int puan, int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz) {
+        super(OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz);
+        this.puan = puan;
+    }
+    public int getPuan() {
+        return puan;
+    }
+
+    public void setPuan(int puan) {
+        this.puan = puan;
+    }
+    
+    public String puani_goster(Oyuncu oyuncu) {
+        return "Oyuncu Puanı : "+puan;  
+    }
+    
+    
+    @Override
+    public void enKisaYol() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************OYUNCU CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************PUAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Puan extends Oyuncu{
+    
+    public Puan(){
+        super();
+    }
+    
+    public String puani_goster(Oyuncu oyuncu) {
+        if (oyuncu instanceof Tembel) {
+            return "Tembelin Puani : " + oyuncu.getPuan();         
+        } 
+        else {             
+            return "Gozluklunun Puani : " + oyuncu.getPuan();         
+        }     
+    }
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************PUAN CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************TEMBEL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Tembel extends Oyuncu {
+
+    public Tembel(int puan, int OyuncuID, String OyuncuAdi, String OyuncuTur, int x, int y, String resim_yolu, int hiz) {
+        super(puan, OyuncuID, OyuncuAdi, OyuncuTur, x, y, resim_yolu, hiz);
+    }
+
+
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************TEMBEL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+//***************************************************************************************
+//**************************************************************************************
+//****************************YOL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+public class Yol {
+    private int ilk_yol;
+    private int son_yol;
+    public Yol(){
+        
+    }
+    public Yol(int ilk_yol, int son_yol) {
+        this.ilk_yol = ilk_yol;
+        this.son_yol = son_yol;
+    }
+    
+    public int getIlk_yol() {
+        return ilk_yol;
+    }
+
+    public void setIlk_yol(int ilk_yol) {
+        this.ilk_yol = ilk_yol;
+    }
+
+    public int getSon_yol() {
+        return son_yol;
+    }
+
+    public void setSon_yol(int son_yol) {
+        this.son_yol = son_yol;
+    }
+    
+}
+//***************************************************************************************
+//**************************************************************************************
+//****************************YOL CLASSI*********************************************
+//******************************************************************************************
+//************************************************************************************
+
+
+
+
+
+
+
+
+

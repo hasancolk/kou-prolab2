@@ -1,0 +1,428 @@
+#include<LiquidCrystal.h>
+LiquidCrystal lcd(7, 6, 5, 4, 3, 2);
+
+struct Hizmet{
+    int hizmetID;
+    String hizmetAd;
+    int kalanHizmetAdet;
+    int hizmetFiyat;
+};
+
+struct Para{
+    int beslik;
+    int onluk;
+    int yirmilik;
+    int ellilik;
+    int yuzluk;
+    int toplamPara;
+};
+
+void paraSifirla(struct Para *para)
+{
+  para->beslik=0;
+  para->onluk=0;
+  para->yirmilik=0;
+  para->ellilik=0;
+  para->yuzluk=0;
+}
+
+void paraEsitle(struct Para *para1,struct Para *para2)
+{
+  para1->beslik=para2->beslik;
+  para1->onluk=para2->onluk;
+  para1->yirmilik=para2->yirmilik;
+  para1->ellilik=para2->ellilik;
+  para1->yuzluk=para2->yuzluk;
+}
+
+void hizmetEsitle(struct Hizmet *hizmet1,struct Hizmet *hizmet2)
+{
+    for(int i=0;i<4;i++){
+    hizmet1[i].hizmetID=hizmet2[i].hizmetID;
+    hizmet1[i].hizmetAd=hizmet2[i].hizmetAd;
+    hizmet1[i].kalanHizmetAdet=hizmet2[i].kalanHizmetAdet;
+    hizmet1[i].hizmetFiyat=hizmet2[i].hizmetFiyat;
+  }
+}
+
+struct Hizmet hizmetler[4];
+struct Hizmet hizmetler2[4];
+struct Para kasa;
+struct Para kasa2;
+struct Para musteri;
+struct Para paraUstu;
+
+void toplamPara()
+{
+  kasa.toplamPara=(kasa.beslik)*5+(kasa.onluk)*10+(kasa.yirmilik)*20+(kasa.ellilik)*50+(kasa.yuzluk)*100;
+  kasa2.toplamPara=(kasa2.beslik)*5+(kasa2.onluk)*10+(kasa2.yirmilik)*20+(kasa2.ellilik)*50+(kasa2.yuzluk)*100;
+  musteri.toplamPara=(musteri.beslik)*5+(musteri.onluk)*10+(musteri.yirmilik)*20+(musteri.ellilik)*50+(musteri.yuzluk)*100;
+  paraUstu.toplamPara=(paraUstu.beslik)*5+(paraUstu.onluk)*10+(paraUstu.yirmilik)*20+(paraUstu.ellilik)*50+(paraUstu.yuzluk)*100;
+}
+
+int ucret;
+int asama;
+int beklet;
+int yetersiz_bakiye;
+
+void setup()
+{
+  Serial.begin(9600);
+  lcd.begin(16, 2);
+  ucret=0;
+  asama=1;
+  beklet=0;
+  yetersiz_bakiye=0;
+  
+  paraSifirla(&musteri);
+  paraSifirla(&paraUstu);
+  
+  kasa.beslik=20;
+  kasa.onluk=20;
+  kasa.yirmilik=10;
+  kasa.ellilik=30;
+  kasa.yuzluk=5;
+  kasa.toplamPara=0;
+  
+  paraEsitle(&kasa2,&kasa); // kasanin degerleri kasa2 ye aktarilarak yedeklenmis olur.
+  
+  hizmetler[0].hizmetID=1;
+  hizmetler[0].hizmetAd="kopukleme";
+  hizmetler[0].kalanHizmetAdet=30;
+  hizmetler[0].hizmetFiyat=15;
+  
+  hizmetler[1].hizmetID=2;
+  hizmetler[1].hizmetAd="yikama";
+  hizmetler[1].kalanHizmetAdet=50;
+  hizmetler[1].hizmetFiyat=10;
+  
+  hizmetler[2].hizmetID=3;
+  hizmetler[2].hizmetAd="kurulama";
+  hizmetler[2].kalanHizmetAdet=100;
+  hizmetler[2].hizmetFiyat=5;
+  
+  hizmetler[3].hizmetID=4;
+  hizmetler[3].hizmetAd="cilalama";
+  hizmetler[3].kalanHizmetAdet=20;
+  hizmetler[3].hizmetFiyat=50;
+  
+  hizmetEsitle(hizmetler2,hizmetler);
+  
+}
+
+
+void loop()
+{
+  
+  int buton1=analogRead(A0);
+  int buton2=analogRead(A1);
+  int buton3=analogRead(A2);
+  int buton4=analogRead(A3);
+  int buton5=analogRead(A4);
+  int buton6=analogRead(A5);
+  int buton7=digitalRead(8);
+  
+  toplamPara();
+  
+  if(asama==1) // para yuklenir
+  {
+    if(buton1>900){
+      musteri.beslik++;
+      lcd.clear();
+      lcd.print("5TL yuklendi");
+      delay(200);
+    }
+    if(buton2>900){
+      musteri.onluk++;
+      lcd.clear();
+      lcd.print("10TL yuklendi");
+      delay(200);
+    }
+    if(buton3>900){
+      musteri.yirmilik++;
+      lcd.clear();
+      lcd.print("20TL yuklendi");
+      delay(200);
+    }
+    if(buton4>900){
+      musteri.ellilik++;
+      lcd.clear();
+      lcd.print("50TL yuklendi");
+      delay(200);
+    }
+    if(buton5>900){
+      musteri.yuzluk++;
+      lcd.clear();
+      lcd.print("100TL yuklendi");
+      delay(200);
+    }
+    if(buton6>900){ // bitis butonu
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("Yukleme Basarili");
+      lcd.setCursor(0,1);
+      lcd.print(musteri.toplamPara);
+      lcd.print("TL yuklendi...");
+      if(yetersiz_bakiye==0) // normal para yukleme islemi
+        asama=2;
+      else // eger bakiye yetersiz cikmissa , tekrar para yuklemek uzere asama 1'e donulmustur. o yuzden tekrar hizmet secimine gerek olmadigindan 3. asamaya gecer
+        asama=3;
+      delay(200);
+    } 
+    if(buton7==1){ // reset butonu
+      lcd.clear();
+      paraSifirla(&musteri);
+      yetersiz_bakiye=0;
+      delay(200);
+    }
+  }
+  
+  if(asama==2) // hizmet secimi yapilir
+  {
+    if(buton1>900){
+      if(hizmetler2[0].kalanHizmetAdet>0)
+      {
+        hizmetler2[0].kalanHizmetAdet--;
+        ucret+=15;
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("   Kopukleme");
+        lcd.setCursor(0,1);
+        lcd.print("Hizmeti Secildi");
+        delay(200);
+      }
+      else
+      {
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     Hizmet");
+        lcd.setCursor(0,1);
+        lcd.print("Secilememektedir");
+      }
+    }
+    if(buton2>900){
+      if(hizmetler2[1].kalanHizmetAdet>0)
+      {
+        hizmetler2[1].kalanHizmetAdet--;
+        ucret+=10;
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print(" Yikama hizmeti");
+        lcd.setCursor(0,1);
+        lcd.print("    Secildi");
+        delay(200);
+      }
+      else
+      {
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     Hizmet");
+        lcd.setCursor(0,1);
+        lcd.print("Secilememektedir");
+      }
+    }
+    if(buton3>900){
+      if(hizmetler2[2].kalanHizmetAdet>0)
+      {
+        hizmetler2[2].kalanHizmetAdet--;
+        ucret+=5;
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("   Kurulama");
+        lcd.setCursor(0,1);
+        lcd.print("Hizmeti Secildi");
+        delay(200);
+      }
+      else
+      {
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     Hizmet");
+        lcd.setCursor(0,1);
+        lcd.print("Secilememektedir");
+      }
+    }
+    if(buton4>900){
+      if(hizmetler2[3].kalanHizmetAdet>0)
+      {
+        hizmetler2[3].kalanHizmetAdet--;
+        ucret+=50;
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("   Cilalama");
+        lcd.setCursor(0,1);
+        lcd.print("Hizmeti Secildi");
+        delay(200);
+      }
+      else
+      {
+        lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print("     Hizmet");
+        lcd.setCursor(0,1);
+        lcd.print("Secilememektedir");
+      }
+    }
+    if(buton5>900){ // bitis butonu
+      int randomSayi=random(1,5);
+      
+      if(randomSayi==2) // eger para sikismissa
+      {
+        for(int i=0;i<4;i++)
+        {
+          hizmetler2[i].kalanHizmetAdet=hizmetler[i].kalanHizmetAdet;
+        }
+        
+        asama=1;
+        lcd.clear();
+        lcd.print("Para Takildi");
+        ucret=0;
+        paraSifirla(&musteri);
+        yetersiz_bakiye=0;
+      }
+      
+      else
+      {
+        asama=3;
+      }
+      
+      delay(200);
+    }
+    if(buton6>900){
+      delay(200);
+    }
+    if(buton7==1){ // reset butonu
+      for(int i=0;i<4;i++){
+        hizmetler2[i].kalanHizmetAdet=hizmetler[i].kalanHizmetAdet;
+      }
+
+      lcd.clear();
+      ucret=0;
+      paraSifirla(&musteri);
+      yetersiz_bakiye=0;
+      asama=1;
+      delay(200);
+    }
+  }
+  
+  if(asama==3) // islemler gerceklestirilir
+  {
+    if(beklet==0)
+    {
+      toplamPara();
+      
+      if(musteri.toplamPara<ucret){
+      lcd.clear();
+      lcd.print("Yetersiz bakiye");
+      yetersiz_bakiye=1;
+      asama=1;
+      }
+    
+      else{
+        kasa2.beslik+=musteri.beslik;
+        kasa2.onluk+=musteri.onluk;
+        kasa2.yirmilik+=musteri.yirmilik;
+        kasa2.ellilik+=musteri.ellilik;
+        kasa2.yuzluk+=musteri.yuzluk;
+
+        toplamPara();
+        ucret=musteri.toplamPara-ucret; // musterinin verdigi paradan hizmetlerin ucreti cikartilir.
+        
+        while(ucret!=0) // para ustu ayarlanir.
+      {
+          if(ucret>=100 && kasa2.yuzluk>0)
+          {
+              ucret-=100;
+              kasa2.yuzluk--;
+              paraUstu.yuzluk++;
+          }
+
+          else if(ucret>=50 && kasa2.ellilik>0)
+          {
+              ucret-=50;
+              kasa2.ellilik--;
+              paraUstu.ellilik++;
+          }
+
+          else if(ucret>=20 && kasa2.yirmilik>0)
+          {
+              ucret-=20;
+              kasa2.yirmilik--;
+              paraUstu.yirmilik++;
+          }
+
+          else if(ucret>=10 && kasa2.onluk>0)
+          {
+              ucret-=10;
+              kasa2.onluk--;
+              paraUstu.onluk++;
+          }
+
+          else if(ucret>=5 && kasa2.beslik>0)
+          {
+              ucret-=5;
+              kasa2.beslik--;
+              paraUstu.beslik++;
+          }
+
+          else
+          {
+              break;
+          }
+
+      } // while
+        
+
+        toplamPara();
+        
+          
+        hizmetEsitle(hizmetler,hizmetler2); // hizmet verileri guncellenir
+        
+        beklet=1;
+        
+        paraEsitle(&kasa,&kasa2); // kasa degerleri guncellenir
+          
+          lcd.clear();
+          lcd.setCursor(0,0);
+          lcd.print(paraUstu.beslik);
+          lcd.print(",");
+          lcd.print(paraUstu.onluk);
+          lcd.print(",");
+          lcd.print(paraUstu.yirmilik);
+          lcd.print(",");
+          lcd.print(paraUstu.ellilik);
+          lcd.print(",");
+          lcd.print(paraUstu.yuzluk);
+          lcd.setCursor(0,1);
+          lcd.print(paraUstu.toplamPara);
+          lcd.print("TL para ustu");
+          
+        
+        
+        if(ucret!=0)
+        {
+          lcd.clear();
+          lcd.print("Kasada para yok");
+        }
+
+      } // else
+      
+    } // beklet
+    
+    
+    if(buton7==1){
+        asama=1;
+        paraSifirla(&musteri);
+        paraSifirla(&paraUstu);
+        ucret=0;
+        beklet=0;
+        yetersiz_bakiye=0;
+        lcd.clear();
+        delay(200);
+      } // reset
+                       
+  } // asama3
+  
+  
+  
+}

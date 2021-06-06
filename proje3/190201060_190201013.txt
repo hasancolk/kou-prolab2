@@ -1,0 +1,3940 @@
+
+public class Album {
+    
+    private int id;
+    private String ad;
+    private int sanatciId;
+    private String sanatciAd;
+    private int tarih;
+    private int turId;
+    private String turAd;
+
+    public Album(int id, String ad, String sanatciAd, int tarih, String turAd) {
+        this.id = id;
+        this.ad = ad;
+        this.sanatciAd = sanatciAd;
+        this.tarih = tarih;
+        this.turAd = turAd;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getAd() {
+        return ad;
+    }
+
+    public void setAd(String ad) {
+        this.ad = ad;
+    }
+
+    public int getSanatciId() {
+        return sanatciId;
+    }
+
+    public void setSanatciId(int sanatciId) {
+        this.sanatciId = sanatciId;
+    }
+
+    public String getSanatciAd() {
+        return sanatciAd;
+    }
+
+    public void setSanatciAd(String sanatciAd) {
+        this.sanatciAd = sanatciAd;
+    }
+
+    public int getTarih() {
+        return tarih;
+    }
+
+    public void setTarih(int tarih) {
+        this.tarih = tarih;
+    }
+
+    public int getTurId() {
+        return turId;
+    }
+
+    public void setTurId(int turId) {
+        this.turId = turId;
+    }
+
+    public String getTurAd() {
+        return turAd;
+    }
+
+    public void setTurAd(String turAd) {
+        this.turAd = turAd;
+    }
+    
+    
+    
+    
+    
+    
+}
+
+-----------------------------------------------------
+
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import javax.swing.JTable;
+import javax.swing.RowFilter;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
+
+
+public class Arayuz extends javax.swing.JFrame {
+
+    DefaultTableModel model_sanatci;
+    DefaultTableModel model_kullanici;
+    DefaultTableModel model_album;
+    DefaultTableModel model_sarki;
+    Islemler islemler = new Islemler();
+    int duzenle=0;
+    private PreparedStatement preparedStatement=null;
+    
+    
+    public Arayuz() {
+        initComponents();
+    }
+    
+    public Arayuz(String ad,String parola){
+        
+        initComponents();
+        
+        model_sanatci = (DefaultTableModel) sanatci_tablosu.getModel();
+        sanatciGoruntule();
+        
+        model_kullanici = (DefaultTableModel) kullanici_tablosu.getModel();
+        kullaniciGoruntule();
+        
+        model_album = (DefaultTableModel) album_tablosu.getModel();
+        albumGoruntule();
+        
+        model_sarki = (DefaultTableModel) sarki_tablosu.getModel();
+        sarkiGoruntule();
+        
+        this.setResizable(false);
+        this.setSize(1100,650);
+        
+        admin_panel.setSize(1100,650);
+        admin_panel.setFocusable(true);
+        admin_panel.setVisible(true);
+        islem_panel.setVisible(false);
+        mesaj.setVisible(false);
+        
+    }
+    
+    public void sanatciGoruntule() { // verileri tabloya getirir.
+        
+        model_sanatci.setRowCount(0);
+        
+        ArrayList<Sanatci> sanatcilar = new ArrayList<Sanatci>();
+        
+        
+        sanatcilar = islemler.sanatcilariGetir(); // tum calisanlarin tutuldugu arraylist donderilir.
+        
+        if (sanatcilar != null ) {
+            
+            for (Sanatci sanatci : sanatcilar) {
+                Object[] eklenecek = {sanatci.getId(),sanatci.getAd(),sanatci.getUlke()};
+                
+                model_sanatci.addRow(eklenecek);
+                
+            }
+            
+        }
+           
+    }
+    
+    public void kullaniciGoruntule() { // verileri tabloya getirir.
+        
+        model_kullanici.setRowCount(0);
+        
+        ArrayList<Kullanici> kullanicilar = new ArrayList<Kullanici>();
+        
+        
+        kullanicilar = islemler.kullanicilariGetir(); // tum calisanlarin tutuldugu arraylist donderilir.
+        
+        if (kullanicilar != null ) {
+            
+            for (Kullanici kullanici : kullanicilar) {
+                Object[] eklenecek = {kullanici.getId(),kullanici.getAd(),kullanici.getEmail(),kullanici.getAbonelik_tur(),kullanici.getUlke()};
+                
+                model_kullanici.addRow(eklenecek);
+                
+            }
+            
+        }
+           
+    }
+    
+    public void albumGoruntule() { // verileri tabloya getirir.
+        
+        model_album.setRowCount(0);
+        
+        ArrayList<Album> albumler = new ArrayList<Album>();
+        
+        
+        albumler = islemler.albumleriGetir(); // tum calisanlarin tutuldugu arraylist donderilir.
+        
+        if (albumler != null ) {
+            
+            for (Album album : albumler) {
+                Object[] eklenecek = {album.getId(),album.getAd(),album.getSanatciAd(),album.getTarih(),album.getTurAd()};
+                
+                model_album.addRow(eklenecek);
+                
+            }
+            
+        }
+           
+    }
+    
+    public void sarkiGoruntule() { // verileri tabloya getirir.
+        
+        model_sarki.setRowCount(0);
+        
+        ArrayList<Sarki> sarkilar = new ArrayList<Sarki>();
+        
+        
+        sarkilar = islemler.sarkilariGetir(); // tum calisanlarin tutuldugu arraylist donderilir.
+        
+        if (sarkilar != null ) {
+            
+            for (Sarki sarki : sarkilar) {
+                Object[] eklenecek = {sarki.getId(),sarki.getAd(),sarki.getSanatciAd(),sarki.getAlbumAd(),sarki.getTurAd(),sarki.getTarih(),sarki.getSure(),sarki.getDinlenme()};
+                
+                model_sarki.addRow(eklenecek);
+                
+            }
+            
+        }
+           
+    }
+    
+    public void dinamikAra(DefaultTableModel model,JTable tablo,String ara){
+        
+        TableRowSorter<DefaultTableModel> tr = new TableRowSorter<DefaultTableModel>(model);
+      
+        tablo.setRowSorter(tr);
+        
+        tr.setRowFilter(RowFilter.regexFilter(ara));
+        
+    }
+    
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        admin_panel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        sanatci_tablosu = new javax.swing.JTable();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        kullanici_tablosu = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        album_tablosu = new javax.swing.JTable();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        sarki_tablosu = new javax.swing.JTable();
+        kullanici_duzenle = new javax.swing.JButton();
+        album_duzenle = new javax.swing.JButton();
+        sarki_duzenle = new javax.swing.JButton();
+        sanatci_duzenle = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        kullanici_ara = new javax.swing.JTextField();
+        sanatci_ara = new javax.swing.JTextField();
+        album_ara = new javax.swing.JTextField();
+        sarki_ara = new javax.swing.JTextField();
+        islem_panel = new javax.swing.JPanel();
+        sil = new javax.swing.JButton();
+        ekle = new javax.swing.JButton();
+        guncelle = new javax.swing.JButton();
+        mesaj = new javax.swing.JLabel();
+        label2 = new javax.swing.JLabel();
+        label3 = new javax.swing.JLabel();
+        label4 = new javax.swing.JLabel();
+        label5 = new javax.swing.JLabel();
+        label6 = new javax.swing.JLabel();
+        label7 = new javax.swing.JLabel();
+        label1 = new javax.swing.JLabel();
+        giris2 = new javax.swing.JTextField();
+        giris3 = new javax.swing.JTextField();
+        giris4 = new javax.swing.JTextField();
+        giris5 = new javax.swing.JTextField();
+        giris6 = new javax.swing.JTextField();
+        giris7 = new javax.swing.JTextField();
+        giris1 = new javax.swing.JTextField();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setMinimumSize(new java.awt.Dimension(1100, 650));
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        admin_panel.setMinimumSize(new java.awt.Dimension(1100, 650));
+        admin_panel.setPreferredSize(new java.awt.Dimension(1100, 650));
+        admin_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sanatci_tablosu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "id", "ad", "ülke"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        sanatci_tablosu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                sanatci_tablosuMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(sanatci_tablosu);
+        if (sanatci_tablosu.getColumnModel().getColumnCount() > 0) {
+            sanatci_tablosu.getColumnModel().getColumn(0).setResizable(false);
+            sanatci_tablosu.getColumnModel().getColumn(1).setResizable(false);
+            sanatci_tablosu.getColumnModel().getColumn(2).setResizable(false);
+        }
+
+        admin_panel.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 400, 260, 170));
+
+        kullanici_tablosu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "id", "ad", "email", "abonelik_tur", "ulke"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        kullanici_tablosu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                kullanici_tablosuMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(kullanici_tablosu);
+        if (kullanici_tablosu.getColumnModel().getColumnCount() > 0) {
+            kullanici_tablosu.getColumnModel().getColumn(0).setResizable(false);
+            kullanici_tablosu.getColumnModel().getColumn(1).setResizable(false);
+            kullanici_tablosu.getColumnModel().getColumn(2).setResizable(false);
+            kullanici_tablosu.getColumnModel().getColumn(3).setResizable(false);
+            kullanici_tablosu.getColumnModel().getColumn(4).setResizable(false);
+        }
+
+        admin_panel.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, 310, 170));
+
+        album_tablosu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "id", "ad", "sanatçı", "tarih", "tür"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        album_tablosu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                album_tablosuMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(album_tablosu);
+        if (album_tablosu.getColumnModel().getColumnCount() > 0) {
+            album_tablosu.getColumnModel().getColumn(0).setResizable(false);
+            album_tablosu.getColumnModel().getColumn(1).setResizable(false);
+            album_tablosu.getColumnModel().getColumn(2).setResizable(false);
+            album_tablosu.getColumnModel().getColumn(3).setResizable(false);
+            album_tablosu.getColumnModel().getColumn(4).setResizable(false);
+        }
+
+        admin_panel.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 400, 330, 170));
+
+        sarki_tablosu.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "id", "ad", "sanatçı", "albüm", "tür", "tarih", "süre", "izlenme"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        sarki_tablosu.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                sarki_tablosuMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(sarki_tablosu);
+        if (sarki_tablosu.getColumnModel().getColumnCount() > 0) {
+            sarki_tablosu.getColumnModel().getColumn(0).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(1).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(2).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(3).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(4).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(5).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(6).setResizable(false);
+            sarki_tablosu.getColumnModel().getColumn(7).setResizable(false);
+        }
+
+        admin_panel.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 400, 450, 170));
+
+        kullanici_duzenle.setText("DUZENLE");
+        kullanici_duzenle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kullanici_duzenleActionPerformed(evt);
+            }
+        });
+        admin_panel.add(kullanici_duzenle, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 260, 120, 30));
+
+        album_duzenle.setText("DUZENLE");
+        album_duzenle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                album_duzenleActionPerformed(evt);
+            }
+        });
+        admin_panel.add(album_duzenle, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 580, 120, 30));
+
+        sarki_duzenle.setText("DUZENLE");
+        sarki_duzenle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sarki_duzenleActionPerformed(evt);
+            }
+        });
+        admin_panel.add(sarki_duzenle, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 580, 120, 30));
+
+        sanatci_duzenle.setText("DUZENLE");
+        sanatci_duzenle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sanatci_duzenleActionPerformed(evt);
+            }
+        });
+        admin_panel.add(sanatci_duzenle, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 580, 120, 30));
+
+        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel2.setText("                       ŞARKILAR");
+        admin_panel.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 340, 330, 20));
+
+        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel3.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel3.setText("              KULLANICILAR");
+        admin_panel.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 20, 280, 20));
+
+        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel4.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel4.setText("     SANATÇILAR");
+        admin_panel.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 340, 170, 20));
+
+        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel5.setForeground(new java.awt.Color(255, 0, 51));
+        jLabel5.setText("               ALBUMLER");
+        admin_panel.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 340, 250, 20));
+
+        kullanici_ara.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                kullanici_araKeyReleased(evt);
+            }
+        });
+        admin_panel.add(kullanici_ara, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 250, -1));
+
+        sanatci_ara.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                sanatci_araKeyReleased(evt);
+            }
+        });
+        admin_panel.add(sanatci_ara, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 370, 240, -1));
+
+        album_ara.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                album_araKeyReleased(evt);
+            }
+        });
+        admin_panel.add(album_ara, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 370, 310, -1));
+
+        sarki_ara.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyReleased(java.awt.event.KeyEvent evt) {
+                sarki_araKeyReleased(evt);
+            }
+        });
+        admin_panel.add(sarki_ara, new org.netbeans.lib.awtextra.AbsoluteConstraints(647, 370, 390, -1));
+
+        islem_panel.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        sil.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        sil.setText("SİL");
+        sil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                silActionPerformed(evt);
+            }
+        });
+        islem_panel.add(sil, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 210, 100, 50));
+
+        ekle.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        ekle.setText("EKLE");
+        ekle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ekleActionPerformed(evt);
+            }
+        });
+        islem_panel.add(ekle, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 30, 100, 50));
+
+        guncelle.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        guncelle.setText("GUNCELLE");
+        guncelle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guncelleActionPerformed(evt);
+            }
+        });
+        islem_panel.add(guncelle, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 120, 100, 50));
+
+        mesaj.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        mesaj.setForeground(new java.awt.Color(0, 51, 204));
+        islem_panel.add(mesaj, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 290, 320, 20));
+
+        label2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label2.setForeground(new java.awt.Color(255, 0, 0));
+        label2.setText("jLabel1");
+        islem_panel.add(label2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 50, 230, 30));
+
+        label3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label3.setForeground(new java.awt.Color(255, 0, 0));
+        label3.setText("jLabel1");
+        islem_panel.add(label3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 90, 230, 30));
+
+        label4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label4.setForeground(new java.awt.Color(255, 0, 0));
+        label4.setText("jLabel1");
+        islem_panel.add(label4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, 230, 30));
+
+        label5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label5.setForeground(new java.awt.Color(255, 0, 0));
+        label5.setText("jLabel1");
+        islem_panel.add(label5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 170, 230, 30));
+
+        label6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label6.setForeground(new java.awt.Color(255, 0, 0));
+        label6.setText("jLabel1");
+        islem_panel.add(label6, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 230, 30));
+
+        label7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label7.setForeground(new java.awt.Color(255, 0, 0));
+        label7.setText("jLabel1");
+        islem_panel.add(label7, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 250, 230, 30));
+
+        label1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        label1.setForeground(new java.awt.Color(255, 0, 0));
+        label1.setText("jLabel1");
+        islem_panel.add(label1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 230, 30));
+
+        giris2.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris2, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 50, 320, 30));
+
+        giris3.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris3, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 90, 320, 30));
+
+        giris4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris4, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 130, 320, 30));
+
+        giris5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris5, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 170, 320, 30));
+
+        giris6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris6, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 210, 320, 30));
+
+        giris7.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris7, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 250, 320, 30));
+
+        giris1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        islem_panel.add(giris1, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 10, 320, 30));
+
+        admin_panel.add(islem_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 0, 740, 320));
+
+        getContentPane().add(admin_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1080, 650));
+
+        pack();
+    }// </editor-fold>                        
+
+    private void kullanici_araKeyReleased(java.awt.event.KeyEvent evt) {                                          
+        String ara = kullanici_ara.getText();
+        
+        dinamikAra(model_kullanici,kullanici_tablosu,ara);
+    }                                         
+
+    private void sanatci_araKeyReleased(java.awt.event.KeyEvent evt) {                                        
+        String ara = sanatci_ara.getText();
+        
+        dinamikAra(model_sanatci,sanatci_tablosu,ara);
+    }                                       
+
+    private void album_araKeyReleased(java.awt.event.KeyEvent evt) {                                      
+        String ara = album_ara.getText();
+        
+        dinamikAra(model_album,album_tablosu,ara);
+    }                                     
+
+    private void sarki_araKeyReleased(java.awt.event.KeyEvent evt) {                                      
+        String ara = sarki_ara.getText();
+        
+        dinamikAra(model_sarki,sarki_tablosu,ara);
+    }                                     
+
+    private void kullanici_duzenleActionPerformed(java.awt.event.ActionEvent evt) {                                                  
+        islem_panel.setVisible(true);
+        labelTemizle();
+        duzenle=1;
+        
+        label1.setText("ad");
+        label2.setText("email");
+        label3.setText("abonelik_tur");
+        label4.setText("ulke");
+        
+        label5.setVisible(false);
+        label6.setVisible(false);
+        label7.setVisible(false);
+        giris5.setVisible(false);
+        giris6.setVisible(false);
+        giris7.setVisible(false);
+        
+        
+        
+    }                                                 
+
+    private void sanatci_duzenleActionPerformed(java.awt.event.ActionEvent evt) {                                                
+        islem_panel.setVisible(true);
+        labelTemizle();
+        duzenle=2;
+        
+        label1.setText("ad");
+        label2.setText("ulke");
+        
+        label3.setVisible(false);
+        label4.setVisible(false);
+        label5.setVisible(false);
+        label6.setVisible(false);
+        label7.setVisible(false);
+        giris3.setVisible(false);
+        giris4.setVisible(false);
+        giris5.setVisible(false);
+        giris5.setVisible(false);
+        giris6.setVisible(false);
+        giris7.setVisible(false);
+    }                                               
+
+    private void album_duzenleActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        islem_panel.setVisible(true);
+        labelTemizle();
+        duzenle=3;
+        
+        label1.setText("ad");
+        label2.setText("sanatçı");
+        label3.setText("tarih");
+        label4.setText("tur");
+        
+        label5.setVisible(false);
+        label6.setVisible(false);
+        label7.setVisible(false);
+        giris5.setVisible(false);
+        giris6.setVisible(false);
+        giris7.setVisible(false);
+    }                                             
+
+    private void sarki_duzenleActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        islem_panel.setVisible(true);
+        labelTemizle();
+        duzenle=4;
+        
+        label1.setText("ad");
+        label2.setText("sanatçı");
+        label3.setText("albüm");
+        label4.setText("tür");
+        label5.setText("tarih");
+        label6.setText("süre");
+        label7.setText("izlenme");
+        
+    }                                             
+
+    
+    private void kullanici_tablosuMouseClicked(java.awt.event.MouseEvent evt) {                                               
+        int selectedrow = kullanici_tablosu.getSelectedRow();
+        
+        giris1.setText(model_kullanici.getValueAt(selectedrow,1).toString());
+        giris2.setText(model_kullanici.getValueAt(selectedrow,2).toString());
+        giris3.setText(model_kullanici.getValueAt(selectedrow,3).toString());
+        giris4.setText(model_kullanici.getValueAt(selectedrow,4).toString());
+    }                                              
+
+    private void sanatci_tablosuMouseClicked(java.awt.event.MouseEvent evt) {                                             
+        int selectedrow = sanatci_tablosu.getSelectedRow();
+        
+        giris1.setText(model_sanatci.getValueAt(selectedrow,1).toString());
+        giris2.setText(model_sanatci.getValueAt(selectedrow,2).toString());
+    }                                            
+
+    private void album_tablosuMouseClicked(java.awt.event.MouseEvent evt) {                                           
+        int selectedrow = album_tablosu.getSelectedRow();
+        String id = model_album.getValueAt(selectedrow,0).toString();
+        int id_deger=Integer.parseInt(id);
+        
+        giris1.setText(model_album.getValueAt(selectedrow,1).toString());
+        //giris2.setText(model_album.getValueAt(selectedrow,2).toString());
+        giris2.setText(Integer.toString(islemler.albumSanatciIdBul(id_deger)));
+        giris3.setText(model_album.getValueAt(selectedrow,3).toString());
+        giris4.setText(model_album.getValueAt(selectedrow,4).toString());
+    }                                          
+
+    private void sarki_tablosuMouseClicked(java.awt.event.MouseEvent evt) {                                           
+        int selectedrow = sarki_tablosu.getSelectedRow();
+        String id = model_sarki.getValueAt(selectedrow,0).toString();
+        int id_deger=Integer.parseInt(id);
+        
+        giris1.setText(model_sarki.getValueAt(selectedrow,1).toString());
+        //giris2.setText(model_sarki.getValueAt(selectedrow,2).toString());
+        //giris3.setText(model_sarki.getValueAt(selectedrow,3).toString());
+        giris2.setText(Integer.toString(islemler.sarkiSanatciBul(id_deger)));
+        giris3.setText(Integer.toString(islemler.sarkiAlbumBul(id_deger)));
+        giris4.setText(model_sarki.getValueAt(selectedrow,4).toString());
+        giris5.setText(model_sarki.getValueAt(selectedrow,5).toString());
+        giris6.setText(model_sarki.getValueAt(selectedrow,6).toString());
+        giris7.setText(model_sarki.getValueAt(selectedrow,7).toString());
+    }                                          
+
+    private void guncelleActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        if(duzenle==1)
+        {
+            String ad = giris1.getText();
+            String email = giris2.getText();
+            String abonelik_tur = giris3.getText();
+            String ulke = giris4.getText();
+
+            int selectedrow = kullanici_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+
+                if (model_kullanici.getRowCount() == 0) {
+                    mesaj.setText("Kullanıcı Tablosu şu anda boş. ");
+                }
+                else {
+                    mesaj.setText("Lütfen güncellenecek bir kullanıcı seçiniz.");
+                }
+            }
+            else {
+
+                int id = (int)model_kullanici.getValueAt(selectedrow,0);
+
+                islemler.kullaniciGuncelle(id,ad,email,abonelik_tur,ulke);
+
+                //kullaniciGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Çalışan başarıyla güncellendi...");
+                }
+        }
+        
+        if(duzenle==2)
+        {
+            String ad = giris1.getText();
+            String ulke = giris2.getText();
+            
+
+            int selectedrow = sanatci_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+
+                if (model_sanatci.getRowCount() == 0) {
+                    mesaj.setText("Sanatçı Tablosu şu anda boş. ");
+                }
+                else {
+                    mesaj.setText("Lütfen güncellenecek bir sanatçı seçiniz.");
+                }
+            }
+            else {
+
+                int id = (int)model_sanatci.getValueAt(selectedrow,0);
+                
+                islemler.sanatciGuncelle(id,ad,ulke);
+
+                //sanatciGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+                
+                mesaj.setText("Çalışan başarıyla güncellendi...");
+                }
+        }
+        
+        if(duzenle==3)
+        {
+            String ad = giris1.getText();
+            String sanatci = giris2.getText();
+            String tarih = giris3.getText();
+            String tur = giris4.getText();
+
+            int selectedrow = album_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+
+                if (model_album.getRowCount() == 0) {
+                    mesaj.setText("Album Tablosu şu anda boş. ");
+                }
+                else {
+                    mesaj.setText("Lütfen güncellenecek bir albüm seçiniz.");
+                }
+            }
+            else {
+
+                int id = (int)model_album.getValueAt(selectedrow,0);
+
+                islemler.albumGuncelle(id,ad,sanatci,tarih,tur);
+
+                //albumGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Album başarıyla güncellendi...");
+                }
+        }
+        
+        if(duzenle==4)
+        {
+            String ad = giris1.getText();
+            String sanatciId = giris2.getText();
+            String albumId = giris3.getText();
+            String tur = giris4.getText();
+            String tarih = giris5.getText();
+            String sure = giris6.getText();
+
+            int selectedrow = sarki_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+
+                if (model_sarki.getRowCount() == 0) {
+                    mesaj.setText("Şarkı Tablosu şu anda boş. ");
+                }
+                else {
+                    mesaj.setText("Lütfen güncellenecek bir şarkı seçiniz.");
+                }
+            }
+            else {
+
+                int id = (int)model_sarki.getValueAt(selectedrow,0);
+
+                islemler.sarkiGuncelle(id,ad,sanatciId,albumId,tur,tarih,sure);
+
+                //sarkiGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Şarkı başarıyla güncellendi...");
+                }
+        }
+        
+    }                                        
+
+    private void ekleActionPerformed(java.awt.event.ActionEvent evt) {                                     
+        if(duzenle==1)
+        {
+            mesaj.setText("");
+        
+            String ad  =  giris1.getText();
+            String email = giris2.getText();
+            String abonelik_tur = giris3.getText();
+            String ulke = giris4.getText();
+
+            islemler.kullaniciEkle(ad,email,abonelik_tur,ulke);
+
+            //kullaniciGoruntule(); // tablo guncellenir.
+            sarkiGoruntule();
+            sanatciGoruntule();
+            kullaniciGoruntule();
+            albumGoruntule();
+
+            mesaj.setText("Yeni Kullanıcı Başarıyla Eklendi...");
+        }
+        
+        if(duzenle==2)
+        {
+            mesaj.setText("");
+        
+            String ad  =  giris1.getText();
+            String ulke = giris2.getText();
+
+            islemler.sanatciEkle(ad,ulke);
+
+            //sanatciGoruntule(); // tablo guncellenir.
+            sarkiGoruntule();
+            sanatciGoruntule();
+            kullaniciGoruntule();
+            albumGoruntule();
+
+            mesaj.setText("Yeni Sanatci Başarıyla Eklendi...");
+        }
+        
+        if(duzenle==3)
+        {
+            mesaj.setText("");
+        
+            String ad  =  giris1.getText();
+            String sanatciId = giris2.getText();
+            String tarih = giris3.getText();
+            String tur = giris4.getText();
+
+            islemler.albumEkle(ad,sanatciId,tarih,tur);
+
+            //albumGoruntule(); // tablo guncellenir.
+            sarkiGoruntule();
+            sanatciGoruntule();
+            kullaniciGoruntule();
+            albumGoruntule();
+
+            mesaj.setText("Yeni Albüm Başarıyla Eklendi...");
+        }
+        
+        if(duzenle==4)
+        {
+            mesaj.setText("");
+        
+            String ad  =  giris1.getText();
+            String sanatciId = giris2.getText();
+            String albumId = giris3.getText();
+            String tur = giris4.getText();
+            String tarih = giris5.getText();
+            String sure = giris6.getText();
+
+            islemler.sarkiEkle_(ad,sanatciId,albumId,tur,tarih,sure);
+
+            //sarkiGoruntule(); // tablo guncellenir.
+            sarkiGoruntule();
+            sanatciGoruntule();
+            kullaniciGoruntule();
+            albumGoruntule();
+
+            mesaj.setText("Yeni Sarki Başarıyla Eklendi...");
+        }
+        
+    }                                    
+
+    private void silActionPerformed(java.awt.event.ActionEvent evt) {                                    
+        if(duzenle==1)
+        {
+            mesaj.setText("");
+       
+            int selectedrow = kullanici_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+                if (model_kullanici.getRowCount() == 0 ) {
+                    mesaj.setText("Kullanıcı tablosu şu anda boş...");
+                }
+                else {
+                    mesaj.setText("Lütfen silinecek bir kullanıcı seçin...");
+                }
+
+            }
+            else {
+                int id = (int)model_kullanici.getValueAt(selectedrow,0);
+
+                islemler.kullaniciSil(id);
+
+                //kullaniciGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Kullanıcı başarıyla silindi...");
+
+            }
+        }
+        
+        if(duzenle==2)
+        {
+            mesaj.setText("");
+       
+            int selectedrow = sanatci_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+                if (model_sanatci.getRowCount() == 0 ) {
+                    mesaj.setText("Sanatçı tablosu şu anda boş...");
+                }
+                else {
+                    mesaj.setText("Lütfen silinecek bir sanatçı seçin...");
+                }
+
+            }
+            else {
+                int id = (int)model_sanatci.getValueAt(selectedrow,0);
+
+                islemler.sanatciSil(id);
+
+                //sanatciGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Sanatçı başarıyla silindi...");
+
+            }
+        }
+        
+        if(duzenle==3)
+        {
+            mesaj.setText("");
+       
+            int selectedrow = album_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+                if (model_album.getRowCount() == 0 ) {
+                    mesaj.setText("Albüm tablosu şu anda boş...");
+                }
+                else {
+                    mesaj.setText("Lütfen silinecek bir albüm seçin...");
+                }
+
+            }
+            else {
+                int id = (int)model_album.getValueAt(selectedrow,0);
+
+                islemler.albumSil(id);
+
+                //albumGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Albüm başarıyla silindi...");
+
+            }
+        }
+        
+        if(duzenle==4)
+        {
+            mesaj.setText("");
+       
+            int selectedrow = sarki_tablosu.getSelectedRow();
+
+            if (selectedrow == -1) {
+                if (model_sarki.getRowCount() == 0 ) {
+                    mesaj.setText("Şarkı tablosu şu anda boş...");
+                }
+                else {
+                    mesaj.setText("Lütfen silinecek bir şarkı seçin...");
+                }
+
+            }
+            else {
+                int id = (int)model_sarki.getValueAt(selectedrow,0);
+
+                islemler.sarkiSil(id);
+
+                //sarkiGoruntule();
+                sarkiGoruntule();
+                sanatciGoruntule();
+                kullaniciGoruntule();
+                albumGoruntule();
+
+                mesaj.setText("Şarkı başarıyla silindi...");
+
+            }
+        }
+        
+    }                                   
+
+    public void labelTemizle(){
+        label2.setText("");
+        label3.setText("");
+        label4.setText("");
+        label5.setText("");
+        label6.setText("");
+        label7.setText("");
+        label1.setText("");
+        label2.setVisible(true);
+        label3.setVisible(true);
+        label4.setVisible(true);
+        label5.setVisible(true);
+        label6.setVisible(true);
+        label7.setVisible(true);
+        label1.setVisible(true);
+        giris1.setVisible(true);
+        giris2.setVisible(true);
+        giris3.setVisible(true);
+        giris4.setVisible(true);
+        giris5.setVisible(true);
+        giris6.setVisible(true);
+        giris7.setVisible(true);
+    }
+    
+    
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(Arayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(Arayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(Arayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(Arayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new Arayuz().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JPanel admin_panel;
+    private javax.swing.JTextField album_ara;
+    private javax.swing.JButton album_duzenle;
+    private javax.swing.JTable album_tablosu;
+    private javax.swing.JButton ekle;
+    private javax.swing.JTextField giris1;
+    private javax.swing.JTextField giris2;
+    private javax.swing.JTextField giris3;
+    private javax.swing.JTextField giris4;
+    private javax.swing.JTextField giris5;
+    private javax.swing.JTextField giris6;
+    private javax.swing.JTextField giris7;
+    private javax.swing.JButton guncelle;
+    private javax.swing.JPanel islem_panel;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JTextField kullanici_ara;
+    private javax.swing.JButton kullanici_duzenle;
+    private javax.swing.JTable kullanici_tablosu;
+    private javax.swing.JLabel label1;
+    private javax.swing.JLabel label2;
+    private javax.swing.JLabel label3;
+    private javax.swing.JLabel label4;
+    private javax.swing.JLabel label5;
+    private javax.swing.JLabel label6;
+    private javax.swing.JLabel label7;
+    private javax.swing.JLabel mesaj;
+    private javax.swing.JTextField sanatci_ara;
+    private javax.swing.JButton sanatci_duzenle;
+    private javax.swing.JTable sanatci_tablosu;
+    private javax.swing.JTextField sarki_ara;
+    private javax.swing.JButton sarki_duzenle;
+    private javax.swing.JTable sarki_tablosu;
+    private javax.swing.JButton sil;
+    // End of variables declaration                   
+}
+
+-----------------------------------------------------
+
+
+public class Database{
+    public static final String kullanici_adi = "root";
+    public static final String parola = "";
+    public static final String db_ismi = "muzik";//database ismi
+    public static final int port = 3306;
+    public static final String host = "localhost";
+}
+
+
+--------------------------------------------------
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+/**
+ *
+ * @author teyfi
+ */
+public class GirisEkrani extends javax.swing.JFrame {
+
+    private Islemler islemler = new Islemler();
+
+    /**
+     * Creates new form GirisEkrani
+     */
+    public GirisEkrani() {
+
+        initComponents();
+        this.setResizable(false);
+        this.setSize(500, 500);
+        giris_paneli.setSize(500, 500);
+        giris_paneli.setFocusable(true);
+
+        admin_giris_paneli.setFocusable(false);
+        admin_giris_paneli.setVisible(false);
+        admin_giris_paneli.setSize(500, 500);
+
+        kullanici_giris_paneli.setFocusable(false);
+        kullanici_giris_paneli.setVisible(false);
+        kullanici_giris_paneli.setSize(500, 500);
+
+        panel_kayit.setFocusable(false);
+        panel_kayit.setVisible(false);
+        panel_kayit.setSize(500, 500);
+
+        kayit_ad.setText("");
+        kayit_email.setText("");
+        kayit_ulke.setText("");
+        kayit_sifre.setText("");
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        giris_paneli = new javax.swing.JPanel();
+        uye_ol = new javax.swing.JButton();
+        admin_girisi = new javax.swing.JButton();
+        kullanıcı_girisi = new javax.swing.JButton();
+        admin_giris_paneli = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        username = new javax.swing.JTextField();
+        admin_giris_yap = new javax.swing.JButton();
+        admin_giris_yap_mesaj = new javax.swing.JLabel();
+        password = new javax.swing.JPasswordField();
+        kullanici_giris_paneli = new javax.swing.JPanel();
+        kullanici_giris_yap = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        kullanici_giris_mesaj = new javax.swing.JLabel();
+        kullanici_adi = new javax.swing.JTextField();
+        sifre = new javax.swing.JPasswordField();
+        panel_kayit = new javax.swing.JPanel();
+        kayit_ad = new javax.swing.JTextField();
+        kayit_email = new javax.swing.JTextField();
+        kayit_sifre = new javax.swing.JTextField();
+        kayit_ulke = new javax.swing.JTextField();
+        kayit_normal = new javax.swing.JButton();
+        kayit_pre = new javax.swing.JButton();
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+        jLabel8 = new javax.swing.JLabel();
+        kayit_mesaj = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        giris_paneli.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        uye_ol.setText("ÜYE OL");
+        uye_ol.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                uye_olActionPerformed(evt);
+            }
+        });
+        giris_paneli.add(uye_ol, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 200, 185, 75));
+
+        admin_girisi.setText("ADMİN GİRİŞİ");
+        admin_girisi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                admin_girisiActionPerformed(evt);
+            }
+        });
+        giris_paneli.add(admin_girisi, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 70, 185, 81));
+
+        kullanıcı_girisi.setText("KULLANICI GİRİŞİ");
+        kullanıcı_girisi.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kullanıcı_girisiActionPerformed(evt);
+            }
+        });
+        giris_paneli.add(kullanıcı_girisi, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 330, 185, 78));
+
+        jLabel1.setText("username : ");
+
+        jLabel2.setText("Password : ");
+
+        admin_giris_yap.setText("Giris YAP");
+        admin_giris_yap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                admin_giris_yapActionPerformed(evt);
+            }
+        });
+
+        admin_giris_yap_mesaj.setForeground(new java.awt.Color(255, 51, 51));
+
+        javax.swing.GroupLayout admin_giris_paneliLayout = new javax.swing.GroupLayout(admin_giris_paneli);
+        admin_giris_paneli.setLayout(admin_giris_paneliLayout);
+        admin_giris_paneliLayout.setHorizontalGroup(
+            admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(admin_giris_paneliLayout.createSequentialGroup()
+                .addGap(94, 94, 94)
+                .addGroup(admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(admin_giris_paneliLayout.createSequentialGroup()
+                        .addGroup(admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(55, 55, 55)
+                        .addGroup(admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(username)
+                            .addComponent(password, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)))
+                    .addComponent(admin_giris_yap_mesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 335, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(90, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, admin_giris_paneliLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(admin_giris_yap, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(114, 114, 114))
+        );
+        admin_giris_paneliLayout.setVerticalGroup(
+            admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(admin_giris_paneliLayout.createSequentialGroup()
+                .addGap(126, 126, 126)
+                .addGroup(admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(40, 40, 40)
+                .addGroup(admin_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2)
+                    .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(55, 55, 55)
+                .addComponent(admin_giris_yap_mesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(34, 34, 34)
+                .addComponent(admin_giris_yap, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(272, Short.MAX_VALUE))
+        );
+
+        kullanici_giris_yap.setText("Giris Yap");
+        kullanici_giris_yap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kullanici_giris_yapActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setText("E mail : ");
+
+        jLabel4.setText("Parola : ");
+
+        kullanici_giris_mesaj.setForeground(new java.awt.Color(255, 51, 51));
+
+        javax.swing.GroupLayout kullanici_giris_paneliLayout = new javax.swing.GroupLayout(kullanici_giris_paneli);
+        kullanici_giris_paneli.setLayout(kullanici_giris_paneliLayout);
+        kullanici_giris_paneliLayout.setHorizontalGroup(
+            kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(kullanici_giris_paneliLayout.createSequentialGroup()
+                .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(kullanici_giris_paneliLayout.createSequentialGroup()
+                        .addGap(155, 155, 155)
+                        .addComponent(kullanici_giris_yap, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(kullanici_giris_paneliLayout.createSequentialGroup()
+                        .addGap(93, 93, 93)
+                        .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(kullanici_giris_mesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(kullanici_giris_paneliLayout.createSequentialGroup()
+                                .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3)
+                                    .addComponent(jLabel4))
+                                .addGap(76, 76, 76)
+                                .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(sifre)
+                                    .addComponent(kullanici_adi, javax.swing.GroupLayout.DEFAULT_SIZE, 176, Short.MAX_VALUE))))))
+                .addContainerGap(56, Short.MAX_VALUE))
+        );
+        kullanici_giris_paneliLayout.setVerticalGroup(
+            kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, kullanici_giris_paneliLayout.createSequentialGroup()
+                .addGap(116, 116, 116)
+                .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(kullanici_adi, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(25, 25, 25)
+                .addGroup(kullanici_giris_paneliLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(sifre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                .addComponent(kullanici_giris_mesaj, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(46, 46, 46)
+                .addComponent(kullanici_giris_yap, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(91, 91, 91))
+        );
+
+        panel_kayit.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        panel_kayit.add(kayit_ad, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 190, 30));
+        panel_kayit.add(kayit_email, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 120, 190, 30));
+        panel_kayit.add(kayit_sifre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 190, 190, 30));
+        panel_kayit.add(kayit_ulke, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 250, 180, 40));
+
+        kayit_normal.setText("Normal");
+        kayit_normal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kayit_normalActionPerformed(evt);
+            }
+        });
+        panel_kayit.add(kayit_normal, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 340, 120, 60));
+
+        kayit_pre.setText("Preminum");
+        kayit_pre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                kayit_preActionPerformed(evt);
+            }
+        });
+        panel_kayit.add(kayit_pre, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 340, 104, 57));
+
+        jLabel5.setText("AD :");
+        panel_kayit.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 60, -1, -1));
+
+        jLabel6.setText("Email :");
+        panel_kayit.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 130, -1, -1));
+
+        jLabel7.setText("Sifre :");
+        panel_kayit.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 200, -1, -1));
+
+        jLabel8.setText("Ülke : ");
+        panel_kayit.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 260, -1, -1));
+
+        kayit_mesaj.setForeground(new java.awt.Color(255, 51, 102));
+        panel_kayit.add(kayit_mesaj, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 20, 250, 20));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(giris_paneli, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 669, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(admin_giris_paneli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap(190, Short.MAX_VALUE)
+                    .addComponent(kullanici_giris_paneli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(panel_kayit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(giris_paneli, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(admin_giris_paneli, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addContainerGap()))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(0, 200, Short.MAX_VALUE)
+                    .addComponent(kullanici_giris_paneli, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(panel_kayit, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void admin_girisiActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        giris_paneli.setVisible(false);
+        giris_paneli.setFocusable(false);
+
+        admin_giris_paneli.setVisible(true);
+        admin_giris_paneli.setFocusable(true);
+
+
+    }                                            
+
+    private void uye_olActionPerformed(java.awt.event.ActionEvent evt) {                                       
+        giris_paneli.setVisible(false);
+        giris_paneli.setFocusable(false);
+
+        panel_kayit.setVisible(true);
+        panel_kayit.setFocusable(true);
+    }                                      
+
+    private void kullanıcı_girisiActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        giris_paneli.setVisible(false);
+        giris_paneli.setFocusable(false);
+
+        kullanici_giris_paneli.setVisible(true);
+        kullanici_giris_paneli.setFocusable(true);
+    }                                                
+
+    private void admin_giris_yapActionPerformed(java.awt.event.ActionEvent evt) {                                                
+        admin_giris_yap_mesaj.setText("");
+        String ad = username.getText();
+        String parola = new String(password.getPassword());
+        boolean girdimi = islemler.adminGirisYap(ad, parola);
+        if (girdimi == true) {
+            Arayuz arayuz = new Arayuz(ad, parola);
+            this.setVisible(false);
+            this.setFocusable(false);
+
+            arayuz.setVisible(true);
+            arayuz.setFocusable(true);
+
+        } else {
+            admin_giris_yap_mesaj.setText("giris basarisiz Tekrar Deneyin....");
+        }
+
+    }                                               
+
+    public void kayitBilgiAl(String abonelik_tur) {
+        String ad = kayit_ad.getText();
+        String email = kayit_email.getText();
+        String sifre = kayit_sifre.getText();
+        String ulke = kayit_ulke.getText();
+        if (ad.isEmpty() != true && email.isEmpty() != true && sifre.isEmpty() != true && ulke.isEmpty() != true) {
+            String mesaj = islemler.kayitKullanici(ad, email, sifre, abonelik_tur, ulke);
+            if (mesaj.equals("Kullanici Başarıyla Eklenmiştir...")) {
+                panel_kayit.setFocusable(false);
+                panel_kayit.setVisible(false);
+                
+                kullanici_giris_paneli.setVisible(true);
+                kullanici_giris_paneli.setFocusable(true);
+                kullanici_giris_mesaj.setText("");
+                kullanici_giris_mesaj.setText(mesaj);
+            } else {
+                kayit_mesaj.setText("");
+                kayit_mesaj.setText(mesaj);
+            }
+        } else {
+            kayit_mesaj.setText("");
+            kayit_mesaj.setText("Girilen Veriler Gecersizdir");
+        }
+
+    }
+    private void kullanici_giris_yapActionPerformed(java.awt.event.ActionEvent evt) {                                                    
+        kullanici_giris_mesaj.setText("");
+        String email = this.kullanici_adi.getText();
+        String sifre = new String(this.sifre.getPassword());
+        boolean girdimi = islemler.kullaniciGirisYap(email, sifre);
+        if (girdimi == true) {
+            int id = islemler.kullaniciID(email, sifre);
+            KullaniciArayuz arayuz = new KullaniciArayuz(id);
+            this.setVisible(false);
+            this.setFocusable(false);
+
+            arayuz.setVisible(true);
+            arayuz.setFocusable(true);
+
+        } else {
+            kullanici_giris_mesaj.setText("giris başarısız tekrar deneyin");
+        }
+    }                                                   
+
+    private void kayit_normalActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        String kayit_turu = "nor";
+        kayitBilgiAl(kayit_turu);
+    }                                            
+
+    private void kayit_preActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        String kayit_turu = "pre";
+        kayitBilgiAl(kayit_turu);
+    }                                         
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(GirisEkrani.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(GirisEkrani.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(GirisEkrani.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(GirisEkrani.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new GirisEkrani().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JPanel admin_giris_paneli;
+    private javax.swing.JButton admin_giris_yap;
+    private javax.swing.JLabel admin_giris_yap_mesaj;
+    private javax.swing.JButton admin_girisi;
+    private javax.swing.JPanel giris_paneli;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JTextField kayit_ad;
+    private javax.swing.JTextField kayit_email;
+    private javax.swing.JLabel kayit_mesaj;
+    private javax.swing.JButton kayit_normal;
+    private javax.swing.JButton kayit_pre;
+    private javax.swing.JTextField kayit_sifre;
+    private javax.swing.JTextField kayit_ulke;
+    private javax.swing.JTextField kullanici_adi;
+    private javax.swing.JLabel kullanici_giris_mesaj;
+    private javax.swing.JPanel kullanici_giris_paneli;
+    private javax.swing.JButton kullanici_giris_yap;
+    private javax.swing.JButton kullanıcı_girisi;
+    private javax.swing.JPanel panel_kayit;
+    private javax.swing.JPasswordField password;
+    private javax.swing.JPasswordField sifre;
+    private javax.swing.JTextField username;
+    private javax.swing.JButton uye_ol;
+    // End of variables declaration                   
+}
+
+
+-------------------------------------------------------
+
+
+import java.lang.reflect.Array;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+
+public class Islemler {
+
+    private Connection con = null;//bağlantı objesi
+
+    private Statement statement = null;//sql sorularını çaıştırmak için class
+    //içindeki metodlar ile çalıştıracağız
+
+    private PreparedStatement preparedStatement = null;
+    private PreparedStatement preparedStatement_2 = null;
+    private PreparedStatement preparedStatement2=null;
+    private PreparedStatement preparedStatement3=null;
+
+    public Islemler() {
+        String url = "jdbc:mysql://" + Database.host + ":" + Database.port + "/" + Database.db_ismi + "?useUnicode=true&characterEncoding=utf8";
+        //"?useUnicode=true&characterEncoding=utf8" türkçe karakterlerin eklenmesidne hata olmaması için 
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            System.out.println("driver bulunamadi...");
+        }
+
+        try {
+            con = DriverManager.getConnection(url, Database.kullanici_adi, Database.parola);
+            System.out.println("Baglanti başarılı");
+        } catch (SQLException ex) {
+            System.out.println("Baglanti Başarısız...");
+            //ex.printStackTrace();
+        }
+    }
+
+    public boolean adminGirisYap(String ad, String parola) {
+        String sorgu = "select * from admin where username=? and password=?";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, ad);
+            preparedStatement.setString(2, parola);
+
+            ResultSet rs = preparedStatement.executeQuery();
+
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public boolean kullaniciGirisYap(String email, String sifre) {
+        String sorgu = "select * from kullanici where email=? and sifre=?";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, sifre);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+
+    }
+
+    public ArrayList<Kullanici> kullaniciGetir() {
+        String sorgu = "SELECT * FROM `kullanici` WHERE 1";
+        ArrayList<Kullanici> sonuc = new ArrayList<>();
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String ad = rs.getString("ad");
+                String email = rs.getString("email");
+                String sifre = rs.getString("sifre");
+                String abonelik_tur = rs.getString("abonelik_tur");
+                String ulke = rs.getString("ulke");
+                sonuc.add(new Kullanici(id, ad, email, sifre, abonelik_tur, ulke));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public ArrayList<Kullanici> kullaniciGetir(int kullanici_id) {
+        String sorgu = "SELECT * FROM takip_tablo T ,kullanici K WHERE T.takipci=? AND T.takip_edilen=K.id ";
+        ArrayList<Kullanici> sonuc = new ArrayList<>();
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, kullanici_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("K.id");
+                String ad = rs.getString("K.ad");
+                String email = rs.getString("K.email");
+                String sifre = rs.getString("K.sifre");
+                String abonelik_tur = rs.getString("K.abonelik_tur");
+                String ulke = rs.getString("K.ulke");
+                sonuc.add(new Kullanici(id, ad, email, sifre, abonelik_tur, ulke));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    public String takipEt(int kullanici_id, int takip_edilecek_id) {
+        int var = takipEtVarmi(kullanici_id, takip_edilecek_id);
+        if (var == 0) {
+            String sorgu = "INSERT INTO `takip_tablo`(`takip_edilen`, `takipci`) VALUES (?,?)";
+            try {
+                preparedStatement = con.prepareStatement(sorgu);
+                preparedStatement.setInt(1, takip_edilecek_id);
+                preparedStatement.setInt(2, kullanici_id);
+                preparedStatement.executeUpdate();
+                return "Takip Etme Basarili";
+            } catch (SQLException ex) {
+                Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+                return "Hata";
+            }
+        }else if(var!=0){
+            return"Kullanıcı zaten Takip Ediliyor";
+        }
+        return "Hata";
+    }
+
+    public int takipEtVarmi(int kullanici_id, int takip_edilecek_id) {
+        String sorgu = "SELECT * FROM `takip_tablo` WHERE takip_edilen=? AND takipci=?";
+        int var = 0;
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, takip_edilecek_id);
+            preparedStatement.setInt(2, kullanici_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                var = rs.getInt("id");
+            }
+            return var;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return -1;
+        }
+    }
+    public void takipCik(int kullanici_id, int secili_kullanici_id_takip){
+        String sorgu="DELETE FROM `takip_tablo` WHERE takip_edilen=? AND takipci=?";
+        try {
+            preparedStatement=con.prepareStatement(sorgu);
+            preparedStatement.setInt(1,secili_kullanici_id_takip);
+            preparedStatement.setInt(2,kullanici_id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public int kullaniciID(String email, String sifre) {
+        String sorgu = "select * from kullanici where email=? and sifre=?";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, email);
+            preparedStatement.setString(2, sifre);
+
+            ResultSet rs = preparedStatement.executeQuery();
+            int id = 0;
+            while (rs.next()) {
+                id = rs.getInt("id");
+            }
+            return id;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    }
+
+    public int kayitKullaniciVarmi(String email) {
+        String sorgu = "SELECT * FROM kullanici WHERE email=?";
+        int sonuc = 0;
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, email);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                sonuc = rs.getInt("id");
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("hata verdi");
+            return -1;
+        }
+
+    }
+
+    public String kayitKullanici(String ad, String email, String sifre, String abonelik_tur, String ulke) {
+        int var = kayitKullaniciVarmi(email);
+
+        if (var == 0) {
+            //yoksa
+
+            String sorgu = "INSERT INTO `kullanici`( `ad`, `email`, `sifre`, `abonelik_tur`, `ulke`) VALUES (?,?,?,?,?)";
+            try {
+                preparedStatement = con.prepareStatement(sorgu);
+                preparedStatement.setString(1, ad);
+                preparedStatement.setString(2, email);
+                preparedStatement.setString(3, sifre);
+                preparedStatement.setString(4, abonelik_tur);
+                preparedStatement.setString(5, ulke);
+                preparedStatement.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+                return "Kullanıcı eklenemedi...";
+            }
+            String sorgu_2 = "INSERT INTO calma_listeleri ( `kullaniciId`, `turId`) VALUES (?, '1'), ( ?, '2'), (?, '3');";
+            int kullanici_id = kullaniciID(email, sifre);
+            try {
+                preparedStatement_2 = con.prepareStatement(sorgu_2);
+                preparedStatement_2.setInt(1, kullanici_id);
+                preparedStatement_2.setInt(2, kullanici_id);
+                preparedStatement_2.setInt(3, kullanici_id);
+                preparedStatement_2.executeUpdate();
+                return "Kullanici Başarıyla Eklenmiştir...";
+            } catch (SQLException ex) {
+                Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+                return "Çalma listeleri olusturulamadı";
+            }
+        } else {
+            //varsa
+            return "Bu email kayıtlıdır başka bir email ile deneyiniz...";
+        }
+    }
+
+    public ArrayList<Sarki> sarkiListe(int kullanici_id, String liste_tur) {
+        String sorgu = "SELECT * FROM sarki S ,sanatci SN ,album A,tur T "
+                + "WHERE T.id=S.tur_id AND S.album_id=A.id AND S.sanatci_id=SN.id AND S.id IN(SELECT sarkiId FROM sarki_ekleme WHERE calmaListesiId IN "
+                + "(SELECT id FROM `calma_listeleri` WHERE kullaniciId =? AND turId IN(SELECT id FROM tur WHERE tur=?)))";
+        ArrayList<Sarki> sonuc = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, kullanici_id);
+            preparedStatement.setString(2, liste_tur);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("S.id");
+                String sarki_adi = rs.getString("S.ad");
+                int tarih = rs.getInt("tarih");
+                String sanatci_adi = rs.getString("SN.ad");
+                int sanatci_id = rs.getInt("sanatci_id");
+                int album_id = rs.getInt("album_id");
+                String album_adi = rs.getString("A.ad");
+                int tur_id = rs.getInt("tur_id");
+                String tur_adi = rs.getString("T.tur");
+                float sure = rs.getFloat("S.sure");
+                int dinlenme_sayisi = rs.getInt("S.dinleme_sayisi");
+                sonuc.add(new Sarki(id, sarki_adi, tarih, sanatci_adi, sanatci_id, album_id, album_adi, tur_id, tur_adi, sure, dinlenme_sayisi));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return sonuc;
+        }
+    }
+
+    public void sarkiOynat(int sarki_id) {
+        String sorgu = "UPDATE `sarki` SET dinleme_sayisi=dinleme_sayisi+1 WHERE id=?";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, sarki_id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public ArrayList<Sarki> sarkiListeTop10Genel() {
+        String sorgu = "SELECT * FROM sarki S ,sanatci SN ,album A ,tur T "
+                + " WHERE S.tur_id=T.id AND S.sanatci_id=SN.id AND A.id=S.album_id ORDER BY S.dinleme_sayisi DESC LIMIT 10";
+        ArrayList<Sarki> sonuc = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("S.id");
+                String sarki_adi = rs.getString("S.ad");
+                int tarih = rs.getInt("tarih");
+                String sanatci_adi = rs.getString("SN.ad");
+                int sanatci_id = rs.getInt("sanatci_id");
+                int album_id = rs.getInt("album_id");
+                String album_adi = rs.getString("A.ad");
+                int tur_id = rs.getInt("tur_id");
+                String tur_adi = rs.getString("T.tur");
+                float sure = rs.getFloat("S.sure");
+                int dinlenme_sayisi = rs.getInt("S.dinleme_sayisi");
+                sonuc.add(new Sarki(id, sarki_adi, tarih, sanatci_adi, sanatci_id, album_id, album_adi, tur_id, tur_adi, sure, dinlenme_sayisi));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return sonuc;
+        }
+    }
+
+    public String sarkiKaldir(int kullanici_id, int sarki_id) {
+
+        String tur = "";
+        String sorgu = "DELETE FROM sarki_ekleme WHERE sarki_ekleme.sarkiId=? AND "
+                + "sarki_ekleme.calmaListesiId "
+                + " IN(SELECT C.id FROM calma_listeleri C,sarki S WHERE C.kullaniciId=? AND S.tur_id=C.turId AND S.id=?)";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, sarki_id);
+            preparedStatement.setInt(2, kullanici_id);
+            preparedStatement.setInt(3, sarki_id);
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        String sorgu2 = "SELECT tur FROM sarki S,tur T WHERE S.id=? AND S.tur_id=T.id";
+        try {
+            preparedStatement = con.prepareStatement(sorgu2);
+            preparedStatement.setInt(1, sarki_id);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            while (rs.next()) {
+                tur = rs.getString("tur");
+            }
+            return tur;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return tur;
+        }
+
+    }
+
+    public ArrayList<Sarki> sarkiListe() {
+        String sorgu = "SELECT * FROM sarki S ,sanatci SN ,album A ,tur T WHERE S.tur_id=T.id AND S.sanatci_id=SN.id AND A.id=S.album_id";
+        ArrayList<Sarki> sonuc = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("S.id");
+                String sarki_adi = rs.getString("S.ad");
+                int tarih = rs.getInt("tarih");
+                String sanatci_adi = rs.getString("SN.ad");
+                int sanatci_id = rs.getInt("sanatci_id");
+                int album_id = rs.getInt("album_id");
+                String album_adi = rs.getString("A.ad");
+                int tur_id = rs.getInt("tur_id");
+                String tur_adi = rs.getString("T.tur");
+                float sure = rs.getFloat("S.sure");
+                int dinlenme_sayisi = rs.getInt("S.dinleme_sayisi");
+                sonuc.add(new Sarki(id, sarki_adi, tarih, sanatci_adi, sanatci_id, album_id, album_adi, tur_id, tur_adi, sure, dinlenme_sayisi));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return sonuc;
+        }
+    }
+
+    public ArrayList<Sarki> sarkiListe(String liste_tur) {
+        String sorgu = "SELECT * FROM sarki S ,sanatci SN ,album A ,tur T "
+                + " WHERE S.tur_id=T.id AND S.sanatci_id=SN.id AND A.id=S.album_id AND T.tur=? ORDER BY S.dinleme_sayisi DESC LIMIT 10";
+        ArrayList<Sarki> sonuc = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, liste_tur);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("S.id");
+                String sarki_adi = rs.getString("S.ad");
+                int tarih = rs.getInt("tarih");
+                String sanatci_adi = rs.getString("SN.ad");
+                int sanatci_id = rs.getInt("sanatci_id");
+                int album_id = rs.getInt("album_id");
+                String album_adi = rs.getString("A.ad");
+                int tur_id = rs.getInt("tur_id");
+                String tur_adi = rs.getString("T.tur");
+                float sure = rs.getFloat("S.sure");
+                int dinlenme_sayisi = rs.getInt("S.dinleme_sayisi");
+                sonuc.add(new Sarki(id, sarki_adi, tarih, sanatci_adi, sanatci_id, album_id, album_adi, tur_id, tur_adi, sure, dinlenme_sayisi));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return sonuc;
+        }
+    }
+
+    public ArrayList<Sarki> sarkiListeUlke(String ulke) {
+        String sorgu = "SELECT * FROM sarki S ,sanatci SN ,album A,tur T"
+                + " WHERE S.tur_id=A.tur_id AND Sn.id=S.sanatci_id AND A.id=S.album_id AND S.tur_id=T.id AND SN.ülke=? "
+                + " ORDER BY S.dinleme_sayisi DESC LIMIT 10";
+
+        ArrayList<Sarki> sonuc = new ArrayList<>();
+
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setString(1, ulke);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                int id = rs.getInt("S.id");
+                String sarki_adi = rs.getString("S.ad");
+                int tarih = rs.getInt("tarih");
+                String sanatci_adi = rs.getString("SN.ad");
+                int sanatci_id = rs.getInt("sanatci_id");
+                int album_id = rs.getInt("album_id");
+                String album_adi = rs.getString("A.ad");
+                int tur_id = rs.getInt("tur_id");
+                String tur_adi = rs.getString("T.tur");
+                float sure = rs.getFloat("S.sure");
+                int dinlenme_sayisi = rs.getInt("S.dinleme_sayisi");
+                sonuc.add(new Sarki(id, sarki_adi, tarih, sanatci_adi, sanatci_id, album_id, album_adi, tur_id, tur_adi, sure, dinlenme_sayisi));
+            }
+            return sonuc;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return sonuc;
+        }
+    }
+
+    public void sarkiEkle(int kullanici_id, int sarki_id) {
+        boolean var = sarkiVarmi(kullanici_id, sarki_id);
+        int calma_listesi_id = 0;
+        String sorgu = "SELECT C.id FROM sarki S ,calma_listeleri C WHERE S.id=? AND S.tur_id=C.turId AND C.kullaniciId=?";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, sarki_id);
+            preparedStatement.setInt(2, kullanici_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                calma_listesi_id = rs.getInt("id");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if (!var) {
+
+            String sorgu2 = "INSERT INTO `sarki_ekleme` (`calmaListesiId`, `sarkiId`) VALUES (?,?)";
+            try {
+                preparedStatement_2 = con.prepareStatement(sorgu2);
+                preparedStatement_2.setInt(1, calma_listesi_id);
+                preparedStatement_2.setInt(2, sarki_id);
+                preparedStatement_2.executeUpdate();
+            } catch (SQLException ex) {
+                Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public String seciliSarkiTur(int id) {
+        String sorgu = "SELECT T.tur FROM sarki S ,tur T WHERE S.id=? AND T.id=S.tur_id";
+        String tur = "";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            ResultSet rs = preparedStatement.executeQuery();
+            while (rs.next()) {
+                tur = rs.getString("tur");
+            }
+            return tur;
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return tur;
+        }
+
+    }
+
+    public boolean sarkiVarmi(int kullanici_id, int sarki_id) {
+
+        String sorgu = "SELECT * FROM sarki S ,calma_listeleri C,sarki_ekleme Se "
+                + "WHERE S.id=? AND S.tur_id=C.turId AND C.kullaniciId=? AND S.id=Se.sarkiId AND Se.calmaListesiId=C.id";
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, sarki_id);
+            preparedStatement.setInt(2, kullanici_id);
+            ResultSet rs = preparedStatement.executeQuery();
+            return rs.next();
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+    
+    public ArrayList<Sanatci> sanatcilariGetir() {
+        
+        ArrayList<Sanatci> cikti = new ArrayList<Sanatci>();
+        
+        try {
+            statement =  con.createStatement();
+            String sorgu =  "Select * From sanatci";
+            
+            ResultSet rs =  statement.executeQuery(sorgu);
+            
+            while(rs.next()) {
+                int id = rs.getInt("id");
+                String ad = rs.getString("ad");
+                String ulke = rs.getString("ülke");
+                
+                cikti.add(new Sanatci(id, ad, ulke));
+                
+            }
+            return cikti;
+           
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+            
+        }
+        
+    }
+    
+    public ArrayList<Kullanici> kullanicilariGetir(){
+        
+        ArrayList<Kullanici> cikti = new ArrayList<Kullanici>();
+        
+        try {
+            statement = con.createStatement();
+            String sorgu = "Select * From kullanici";
+            
+            ResultSet rs = statement.executeQuery(sorgu);
+            
+            while(rs.next()){
+                int id = rs.getInt("id");
+                String ad = rs.getString("ad");
+                String email = rs.getString("email");
+                String sifre = rs.getString("sifre");
+                String abonelik_tur = rs.getString("abonelik_tur");
+                String ulke = rs.getString("ulke");
+                
+                cikti.add(new Kullanici(id, ad, email , sifre , abonelik_tur , ulke));
+            }
+            
+            return cikti;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+    }
+    
+    public ArrayList<Album> albumleriGetir(){
+        
+        ArrayList<Album> cikti = new ArrayList<Album>();
+        
+        try {
+            statement = con.createStatement();
+            String sorgu = "Select * From album A,sanatci S,tur T Where A.sanatci_id=S.id and T.id=A.tur_id";
+            
+            ResultSet rs = statement.executeQuery(sorgu);
+            
+            while(rs.next()){
+                int id = rs.getInt("A.id");
+                String ad = rs.getString("A.ad");
+                String sanatciAd = rs.getString("S.ad");
+                int tarih = rs.getInt("A.tarih");
+                String turAd = rs.getString("T.tur");
+                
+                cikti.add(new Album(id, ad, sanatciAd , tarih , turAd));
+            }
+            
+            return cikti;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+    }
+    
+    public ArrayList<Sarki> sarkilariGetir(){
+        
+        ArrayList<Sarki> cikti = new ArrayList<Sarki>();
+        
+        try {
+            statement = con.createStatement();
+            String sorgu = "select * from sarki,tur T,sanatci,album A where sarki.tur_id=T.id and sarki.sanatci_id=sanatci.id and sarki.album_id=A.id";
+            
+            ResultSet rs = statement.executeQuery(sorgu);
+            
+            while(rs.next()){
+                int id = rs.getInt("sarki.id");
+                String ad = rs.getString("sarki.ad");
+                String sanatciAd = rs.getString("sanatci.ad");
+                int tarih = rs.getInt("sarki.tarih");
+                String turAd = rs.getString("T.tur");
+                String albumAd = rs.getString("A.ad");
+                int dinlenme = rs.getInt("dinleme_sayisi");
+                float sure = rs.getFloat("sure");
+                
+                cikti.add(new Sarki(id,  ad,  tarih,  sanatciAd,  turAd,  albumAd,  dinlenme,  sure));
+            }
+            
+            return cikti;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+        
+    }
+    
+    public void kullaniciGuncelle(int id,String ad,String email,String abonelik_tur,String ulke){
+        String sorgu =  "Update kullanici set ad = ? , email = ? , abonelik_tur = ? , ulke = ? where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            
+            preparedStatement.setString(1,ad);
+            preparedStatement.setString(2,email);
+            
+            preparedStatement.setString(3,abonelik_tur);
+            preparedStatement.setString(4,ulke);
+            
+            preparedStatement.setInt(5, id);
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void sanatciGuncelle(int id,String ad,String ulke){
+        String sorgu =  "Update sanatci set ad = ? , ülke = ? where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            
+            preparedStatement.setString(1,ad);
+            preparedStatement.setString(2,ulke);
+            
+            preparedStatement.setInt(3, id);
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void albumGuncelle(int id,String ad,String sanatci,String tarih,String tur){
+        String sorgu =  "Update album set ad = ? , sanatci_id = ? , tarih = ? , tur_id = ? where id = ?";
+        String sorgu3 = "select * from tur where tur=?";
+        
+        try {
+            int turId=0;
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            preparedStatement3 = con.prepareStatement(sorgu3);
+            preparedStatement3.setString(1, tur);
+            ResultSet rs =  preparedStatement3.executeQuery();
+            
+            while(rs.next()) {
+                turId = rs.getInt("id");
+            }
+            
+            preparedStatement.setString(1,ad);
+            preparedStatement.setString(2,sanatci);
+            
+            preparedStatement.setString(3,tarih);
+            preparedStatement.setInt(4,turId);
+            
+            preparedStatement.setInt(5, id);
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void sarkiGuncelle(int id,String ad,String sanatciId,String albumId,String tur,String tarih,String sure){
+        String sorgu =  "Update sarki set ad = ? , sanatci_id = ? , album_id = ? , tur_id = ? , tarih = ? , sure = ? where id = ?";
+        String sorgu2 = "select * from album where id = ?";
+        String sorgu3 = "select * from tur where tur=?";
+        
+        try {
+            int turId=0;
+            int album_sanatciId=0;
+            int album_turId=0;
+            
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            preparedStatement2 = con.prepareStatement(sorgu2);
+            preparedStatement2.setString(1, albumId);
+            ResultSet rs =  preparedStatement2.executeQuery();
+            
+            while(rs.next()) {
+                album_sanatciId = rs.getInt("sanatci_id");
+                album_turId = rs.getInt("tur_id");
+            }
+            
+            preparedStatement3 = con.prepareStatement(sorgu3);
+            preparedStatement3.setString(1, tur);
+            rs =  preparedStatement3.executeQuery();
+            
+            while(rs.next()) {
+                turId = rs.getInt("id");
+            }
+            
+            preparedStatement.setString(1,ad);
+            preparedStatement.setString(2,sanatciId);
+            preparedStatement.setString(3,albumId);
+            preparedStatement.setInt(4,turId);
+            preparedStatement.setString(5,tarih);
+            preparedStatement.setString(6,sure);
+            
+            preparedStatement.setInt(7, id);
+            
+            if(Integer.parseInt(sanatciId)==album_sanatciId && turId==album_turId)
+                preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void kullaniciEkle(String ad,String email,String abonelik_tur,String ulke) {
+        
+        String sorgu = "Insert Into kullanici (ad,email,abonelik_tur,ulke,sifre) VALUES(?,?,?,?,?)";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            
+            preparedStatement.setString(1, ad);
+            preparedStatement.setString(2, email);
+            preparedStatement.setString(3, abonelik_tur);
+            preparedStatement.setString(4, ulke);
+            preparedStatement.setString(5, "1234");
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void sanatciEkle(String ad,String ulke) {
+        
+        String sorgu = "Insert Into sanatci (ad,ülke) VALUES(?,?)";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            
+            
+            preparedStatement.setString(1, ad);
+            preparedStatement.setString(2, ulke);
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void albumEkle(String ad,String sanatciId,String tarih,String tur) {
+        
+        String sorgu1 = "Insert Into album (ad,sanatci_id,tarih,tur_id) VALUES(?,?,?,?)";
+        //String sorgu2 = "select * from sanatci where ad=?"; // sanatcinin id'si alinir.
+        String sorgu3 = "select * from tur where tur=?";
+        
+        try {
+     
+            int turId=0;
+            
+            preparedStatement = con.prepareStatement(sorgu1);
+            
+            /*preparedStatement2 = con.prepareStatement(sorgu2);
+            preparedStatement2.setString(1, sanatci);
+            ResultSet rs =  preparedStatement2.executeQuery();
+            
+            while(rs.next()) {
+                sanatciId = rs.getInt("id");
+            }*/
+            
+            preparedStatement3 = con.prepareStatement(sorgu3);
+            preparedStatement3.setString(1, tur);
+            ResultSet rs =  preparedStatement3.executeQuery();
+            
+            while(rs.next()) {
+                turId = rs.getInt("id");
+            }
+            
+            preparedStatement.setString(1, ad);
+            preparedStatement.setString(2, sanatciId);
+            preparedStatement.setString(3, tarih);
+            preparedStatement.setInt(4, turId);
+            
+            preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void sarkiEkle_(String ad,String sanatciId,String albumId,String tur,String tarih,String sure) {
+        
+        String sorgu1 = "Insert Into sarki (ad,sanatci_id,album_id,tur_id,tarih,sure,dinleme_sayisi) VALUES(?,?,?,?,?,?,0)";
+        String sorgu2 = "select * from album where id = ?";
+        String sorgu3 = "select * from tur where tur=?";
+        
+        try {
+     
+            int turId=0;
+            int album_sanatciId=0;
+            int album_turId=0;
+            
+            preparedStatement = con.prepareStatement(sorgu1);
+            
+            preparedStatement2 = con.prepareStatement(sorgu2);
+            preparedStatement2.setString(1, albumId);
+            ResultSet rs =  preparedStatement2.executeQuery();
+            
+            while(rs.next()) {
+                album_sanatciId = rs.getInt("sanatci_id");
+                album_turId = rs.getInt("tur_id");
+            }
+            
+            preparedStatement3 = con.prepareStatement(sorgu3);
+            preparedStatement3.setString(1, tur);
+            rs =  preparedStatement3.executeQuery();
+            
+            while(rs.next()) {
+                turId = rs.getInt("id");
+            }
+            
+            preparedStatement.setString(1, ad);
+            preparedStatement.setString(2, sanatciId);
+            preparedStatement.setString(3, albumId);
+            preparedStatement.setInt(4, turId);
+            preparedStatement.setString(5, tarih);
+            preparedStatement.setString(6, sure);
+            
+            if(Integer.parseInt(sanatciId)==album_sanatciId && turId==album_turId)
+                preparedStatement.executeUpdate();
+            
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void kullaniciSil(int id) {
+        
+        String sorgu = "Delete from kullanici where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
+    
+    public void sanatciSil(int id) {
+        
+        String sorgu = "Delete from sanatci where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
+    
+    public void albumSil(int id) {
+        
+        String sorgu = "Delete from album where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
+    
+    public void sarkiSil(int id) {
+        
+        String sorgu = "Delete from sarki where id = ?";
+        
+        try {
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            
+            preparedStatement.executeUpdate();
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+        }   
+    }
+    
+    public int albumSanatciIdBul(int id){
+        try {
+            String sorgu = "select * from album where album.id=?";
+            int sonuc=0;
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            ResultSet rs =  preparedStatement.executeQuery();
+
+                while(rs.next()) {
+                    sonuc = rs.getInt("album.sanatci_id");
+                }
+            
+                return sonuc;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+         
+    }
+    
+    public int sarkiSanatciBul(int id){
+        try {
+            String sorgu = "select * from sarki where sarki.id=?";
+            int sonuc=0;
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            ResultSet rs =  preparedStatement.executeQuery();
+
+                while(rs.next()) {
+                    sonuc = rs.getInt("sarki.sanatci_id");
+                }
+            
+                return sonuc;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+         
+    }
+    
+    public int sarkiAlbumBul(int id){
+        try {
+            String sorgu = "select * from sarki where sarki.id=?";
+            int sonuc=0;
+            preparedStatement = con.prepareStatement(sorgu);
+            preparedStatement.setInt(1, id);
+            ResultSet rs =  preparedStatement.executeQuery();
+
+                while(rs.next()) {
+                    sonuc = rs.getInt("sarki.album_id");
+                }
+            
+                return sonuc;
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(Islemler.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+         
+    }
+    
+}
+
+
+-------------------------------------------------------------
+
+
+public class Kullanici {
+    private int id;
+    private String ad;
+    private String email;
+    private String sifre;
+    private String abonelik_tur;
+    private String ulke;
+
+    public Kullanici(int id, String ad, String email, String sifre, String abonelik_tur, String ulke) {
+        this.id= id;
+        this.ad = ad;
+        this.email = email;
+        this.sifre = sifre;
+        this.abonelik_tur = abonelik_tur;
+        this.ulke = ulke;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public String getAd() {
+        return ad;
+    }
+
+    public void setAd(String ad) {
+        this.ad = ad;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getSifre() {
+        return sifre;
+    }
+
+    public void setSifre(String sifre) {
+        this.sifre = sifre;
+    }
+
+    public String getAbonelik_tur() {
+        return abonelik_tur;
+    }
+
+    public void setAbonelik_tur(String abonelik_tur) {
+        this.abonelik_tur = abonelik_tur;
+    }
+
+    public String getUlke() {
+        return ulke;
+    }
+
+    public void setUlke(String ulke) {
+        this.ulke = ulke;
+    }
+    
+}
+
+
+----------------------------------------------------
+
+
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+/**
+ *
+ * @author teyfi
+ */
+public class KullaniciArayuz extends javax.swing.JFrame {
+
+    DefaultTableModel model = new DefaultTableModel();
+    DefaultTableModel model_tum_sarkilar = new DefaultTableModel();
+    DefaultTableModel model_top10_tur = new DefaultTableModel();
+    DefaultTableModel model_top_10_ulke = new DefaultTableModel();
+    DefaultTableModel model_tablo_kullanici = new DefaultTableModel();
+    DefaultTableModel model_tablo_sarki_takip_edilen = new DefaultTableModel();
+    DefaultTableModel model_tablo_takip_edilen = new DefaultTableModel();
+
+    ArrayList<Kullanici> kullanicilar = new ArrayList<>();
+    ArrayList<Kullanici> kullanicilar_pre = new ArrayList<>();
+
+    ArrayList<Sarki> sarkilar = new ArrayList<>();
+
+    Islemler islemler = new Islemler();
+    private int secili_sarki_id;
+    private int secili_sarki_id_takip;
+    private int kullanici_id;
+    private String liste_turu_kullanici;
+    private String liste_turu_top_10;
+    private int secili_kullanici_id;
+    private String secili_kullanici_tur;
+    private int secili_kullanici_id_takip=0;
+    private String secili_kullanici_tur_takip;
+    ArrayList<Sarki> sarkilar_tum = new ArrayList<>();
+    ArrayList<Sarki> sarkilar_top10_tur = new ArrayList<>();
+    ArrayList<Sarki> sarkilar_takip=new ArrayList<>();
+
+    /**
+     * Creates new form KullaniciArayuz
+     */
+    public KullaniciArayuz() {
+        initComponents();
+
+    }
+
+    public KullaniciArayuz(int kullanici_id) {
+
+        initComponents();
+        this.kullanici_id = kullanici_id;
+        this.setResizable(false);
+        this.setSize(1400, 800);
+
+        panel_kullanici.setSize(1400, 800);
+        panel_kullanici.setFocusable(true);
+        panel_kullanici.setVisible(true);
+
+        panel_takip.setSize(1400, 800);
+        panel_takip.setFocusable(false);
+        panel_takip.setVisible(false);
+
+        model = (DefaultTableModel) tablo_kullanıcı.getModel();
+        model_tum_sarkilar = (DefaultTableModel) tablo_tum_sarkilar.getModel();
+        model_top10_tur = (DefaultTableModel) tablo_top10_tur.getModel();
+
+        model_tablo_kullanici = (DefaultTableModel) tablo_kullanici.getModel();
+        model_tablo_sarki_takip_edilen = (DefaultTableModel) tablo_sarki_takip_edilen.getModel();
+        model_tablo_takip_edilen = (DefaultTableModel) tablo_kullanici_takip_edilen.getModel();
+        kullaniciGoruntule(kullanici_id);
+        sarkiGoruntuleTum();
+        kullaniciGoruntule();
+
+    }
+
+    public void sarkiGoruntuleTum() {
+        model_tum_sarkilar.setRowCount(0);
+        sarkilar_tum = islemler.sarkiListe();
+        if (sarkilar_tum != null) {
+            for (Sarki sarki : sarkilar_tum) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model_tum_sarkilar.addRow(eklenecek);
+            }
+        }
+    }
+    public void sarkiGoruntuleTakip(String liste_tur){
+        model_tablo_sarki_takip_edilen.setRowCount(0);
+        sarkilar_takip=islemler.sarkiListe(secili_kullanici_id_takip,liste_tur);
+        if(sarkilar_takip!=null){
+            for (Sarki sarki : sarkilar_takip) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model_tablo_sarki_takip_edilen.addRow(eklenecek);
+            }
+        }
+    }
+    public void sarkiGoruntule(String liste_tur) {
+        model.setRowCount(0);
+        LabelListeTur.setText("");
+        LabelListeTur.setText("KULLANICI " + liste_tur);
+        sarkilar = islemler.sarkiListe(kullanici_id, liste_tur);
+        if (sarkilar != null) {
+            for (Sarki sarki : sarkilar) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model.addRow(eklenecek);
+            }
+        }
+    }
+
+    public void sarkiGoruntuleUlke(String ulke) {
+        model_top10_tur.setRowCount(0);
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(ulke + " Top 10");
+        sarkilar_top10_tur = islemler.sarkiListeUlke(ulke);
+        if (sarkilar_top10_tur != null) {
+            for (Sarki sarki : sarkilar_top10_tur) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model_top10_tur.addRow(eklenecek);
+            }
+        }
+    }
+
+    public void kullaniciGoruntule() {
+        model_tablo_kullanici.setRowCount(0);
+        kullanicilar = islemler.kullaniciGetir();
+        if (kullanicilar != null) {
+            for (Kullanici kullanici : kullanicilar) {
+                Object[] eklenecek = {kullanici.getAd(), kullanici.getEmail(), kullanici.getAbonelik_tur(), kullanici.getUlke()};
+                model_tablo_kullanici.addRow(eklenecek);
+            }
+        }
+
+    }
+
+    public void kullaniciGoruntule(int kullanici_id) {
+        model_tablo_takip_edilen.setRowCount(0);
+        kullanicilar_pre = islemler.kullaniciGetir(kullanici_id);
+        if (kullanicilar_pre != null) {
+            for (Kullanici kullanici : kullanicilar_pre) {
+                Object[] eklenecek = {kullanici.getAd(), kullanici.getEmail(), kullanici.getAbonelik_tur(), kullanici.getUlke()};
+                model_tablo_takip_edilen.addRow(eklenecek);
+            }
+        }
+    }
+
+    public void takipEt() {
+        mesaj_panel_takip.setText("");
+        if (secili_kullanici_tur.equals("nor")) {
+            mesaj_panel_takip.setText("");
+            mesaj_panel_takip.setText("Sadece Premium Kullanıcılar Takip Edilebilir");
+        } else if (kullanici_id == secili_kullanici_id) {
+            mesaj_panel_takip.setText("");
+            mesaj_panel_takip.setText("Kullanıcı Kendini Takip Edemez");
+        } else {
+            String mesaj = islemler.takipEt(kullanici_id, secili_kullanici_id);
+            mesaj_panel_takip.setText("");
+            mesaj_panel_takip.setText(mesaj);
+            kullaniciGoruntule(kullanici_id);
+        }
+    }
+
+    public void sarkiGoruntuleTop10Genel() {
+        model_top10_tur.setRowCount(0);
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText("Genel Top 10");
+        sarkilar_top10_tur = islemler.sarkiListeTop10Genel();
+        if (sarkilar_top10_tur != null) {
+            for (Sarki sarki : sarkilar_top10_tur) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model_top10_tur.addRow(eklenecek);
+            }
+        }
+    }
+
+    public void sarkiGoruntuleTur(String liste_tur) {
+        model_top10_tur.setRowCount(0);
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(liste_tur + " Top 10");
+        sarkilar_top10_tur = islemler.sarkiListe(liste_tur);
+        if (sarkilar_top10_tur != null) {
+            for (Sarki sarki : sarkilar_top10_tur) {
+                Object[] eklenecek = {sarki.getSarki_adi(), sarki.getSanatci_adi(), sarki.getAlbum_adi(), sarki.getSure(), sarki.getDinlenme_sayisi(), sarki.getTur_adi()};
+                model_top10_tur.addRow(eklenecek);
+            }
+        }
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">                          
+    private void initComponents() {
+
+        panel_kullanici = new javax.swing.JPanel();
+        LabelTumSarkilar = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tablo_kullanıcı = new javax.swing.JTable();
+        Label_top10_tur = new javax.swing.JLabel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tablo_top10_tur = new javax.swing.JTable();
+        buton_top_10_genel = new javax.swing.JButton();
+        buton_pop_top10 = new javax.swing.JButton();
+        buton_jazz_top10 = new javax.swing.JButton();
+        buton_klasik_top10 = new javax.swing.JButton();
+        buton_top_10_tr = new javax.swing.JButton();
+        buton_top_10_abd = new javax.swing.JButton();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        tablo_tum_sarkilar = new javax.swing.JTable();
+        button_jazz = new javax.swing.JButton();
+        button_pop = new javax.swing.JButton();
+        buton_oynat = new javax.swing.JButton();
+        button_klasik = new javax.swing.JButton();
+        sarki_ekle = new javax.swing.JButton();
+        sarki_kaldir = new javax.swing.JButton();
+        LabelListeTur = new javax.swing.JLabel();
+        buton_takip_panel = new javax.swing.JButton();
+        panel_takip = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablo_kullanici = new javax.swing.JTable();
+        buton_takip = new javax.swing.JButton();
+        buton_ekle_takip = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablo_sarki_takip_edilen = new javax.swing.JTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
+        tablo_kullanici_takip_edilen = new javax.swing.JTable();
+        mesaj_panel_takip = new javax.swing.JLabel();
+        buton_pop_takip = new javax.swing.JButton();
+        buton_jazz_takip = new javax.swing.JButton();
+        buton_klasik_takip = new javax.swing.JButton();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        buton_takipten_cik = new javax.swing.JButton();
+        onceki_menu = new javax.swing.JButton();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        panel_kullanici.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        LabelTumSarkilar.setText("Tüm Şarkılar");
+        panel_kullanici.add(LabelTumSarkilar, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 20, -1, 22));
+
+        tablo_kullanıcı.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Sarki", "Sanatci", "Album", "Sure", "Dinlenme", "Tür"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_kullanıcı.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_kullanıcıMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tablo_kullanıcı);
+        if (tablo_kullanıcı.getColumnModel().getColumnCount() > 0) {
+            tablo_kullanıcı.getColumnModel().getColumn(0).setResizable(false);
+            tablo_kullanıcı.getColumnModel().getColumn(1).setResizable(false);
+            tablo_kullanıcı.getColumnModel().getColumn(2).setResizable(false);
+            tablo_kullanıcı.getColumnModel().getColumn(3).setResizable(false);
+            tablo_kullanıcı.getColumnModel().getColumn(4).setResizable(false);
+            tablo_kullanıcı.getColumnModel().getColumn(5).setResizable(false);
+        }
+
+        panel_kullanici.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 440, 434, 308));
+        panel_kullanici.add(Label_top10_tur, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 30, 85, 26));
+
+        tablo_top10_tur.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Sarki", "Sanatci", "Album", "Sure", "Dinlenme", "Tur"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_top10_tur.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_top10_turMouseClicked(evt);
+            }
+        });
+        jScrollPane5.setViewportView(tablo_top10_tur);
+        if (tablo_top10_tur.getColumnModel().getColumnCount() > 0) {
+            tablo_top10_tur.getColumnModel().getColumn(0).setResizable(false);
+            tablo_top10_tur.getColumnModel().getColumn(1).setResizable(false);
+            tablo_top10_tur.getColumnModel().getColumn(2).setResizable(false);
+            tablo_top10_tur.getColumnModel().getColumn(3).setResizable(false);
+            tablo_top10_tur.getColumnModel().getColumn(4).setResizable(false);
+            tablo_top10_tur.getColumnModel().getColumn(5).setResizable(false);
+        }
+
+        panel_kullanici.add(jScrollPane5, new org.netbeans.lib.awtextra.AbsoluteConstraints(670, 70, 490, 250));
+
+        buton_top_10_genel.setText("Genel Top 10");
+        buton_top_10_genel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_top_10_genelActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_top_10_genel, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 60, 109, 34));
+
+        buton_pop_top10.setText("Pop Top 10");
+        buton_pop_top10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_pop_top10ActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_pop_top10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 110, 109, 33));
+
+        buton_jazz_top10.setText("Jazz Top 10");
+        buton_jazz_top10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_jazz_top10ActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_jazz_top10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 160, 109, 32));
+
+        buton_klasik_top10.setText("Klasik Top 10");
+        buton_klasik_top10.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_klasik_top10ActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_klasik_top10, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 210, 109, 32));
+
+        buton_top_10_tr.setText("TR Top 10");
+        buton_top_10_tr.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_top_10_trActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_top_10_tr, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 310, 110, -1));
+
+        buton_top_10_abd.setText("ABD Top 10");
+        buton_top_10_abd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_top_10_abdActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_top_10_abd, new org.netbeans.lib.awtextra.AbsoluteConstraints(1210, 260, 109, -1));
+
+        tablo_tum_sarkilar.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Sarki", "Sanatci", "Album", "Sure", "Dinlenme", "Tur"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_tum_sarkilar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_tum_sarkilarMouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(tablo_tum_sarkilar);
+        if (tablo_tum_sarkilar.getColumnModel().getColumnCount() > 0) {
+            tablo_tum_sarkilar.getColumnModel().getColumn(0).setResizable(false);
+            tablo_tum_sarkilar.getColumnModel().getColumn(1).setResizable(false);
+            tablo_tum_sarkilar.getColumnModel().getColumn(2).setResizable(false);
+            tablo_tum_sarkilar.getColumnModel().getColumn(3).setResizable(false);
+            tablo_tum_sarkilar.getColumnModel().getColumn(4).setResizable(false);
+            tablo_tum_sarkilar.getColumnModel().getColumn(5).setResizable(false);
+        }
+
+        panel_kullanici.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 60, 480, 260));
+
+        button_jazz.setText("Jazz");
+        button_jazz.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_jazzActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(button_jazz, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 580, 93, 43));
+
+        button_pop.setText("Pop");
+        button_pop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_popActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(button_pop, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 530, 93, 43));
+
+        buton_oynat.setText("OYNAT");
+        buton_oynat.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_oynatActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_oynat, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 420, 133, 41));
+
+        button_klasik.setText("Klasik");
+        button_klasik.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                button_klasikActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(button_klasik, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 640, 93, 43));
+
+        sarki_ekle.setText("Seçili Şarkıyı Ekle");
+        sarki_ekle.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sarki_ekleActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(sarki_ekle, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 470, 123, 43));
+
+        sarki_kaldir.setText("Kaldır");
+        sarki_kaldir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sarki_kaldirActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(sarki_kaldir, new org.netbeans.lib.awtextra.AbsoluteConstraints(780, 700, 93, 44));
+        panel_kullanici.add(LabelListeTur, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 400, 171, 30));
+
+        buton_takip_panel.setText("Takip Sayfası");
+        buton_takip_panel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_takip_panelActionPerformed(evt);
+            }
+        });
+        panel_kullanici.add(buton_takip_panel, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 400, 170, 60));
+
+        panel_takip.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        tablo_kullanici.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Ad", "Email", "Abonelik Tür", "Ülke"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_kullanici.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_kullaniciMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tablo_kullanici);
+        if (tablo_kullanici.getColumnModel().getColumnCount() > 0) {
+            tablo_kullanici.getColumnModel().getColumn(0).setResizable(false);
+            tablo_kullanici.getColumnModel().getColumn(1).setResizable(false);
+            tablo_kullanici.getColumnModel().getColumn(2).setResizable(false);
+            tablo_kullanici.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        panel_takip.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 50, 510, 250));
+
+        buton_takip.setText("Takip Et");
+        buton_takip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_takipActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 320, 180, 70));
+
+        buton_ekle_takip.setText("Ekle");
+        buton_ekle_takip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_ekle_takipActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_ekle_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 270, 180, 80));
+
+        tablo_sarki_takip_edilen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Sarki", "Sanatci", "Album", "Sure", "Dinlenme", "Tür"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_sarki_takip_edilen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_sarki_takip_edilenMouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(tablo_sarki_takip_edilen);
+        if (tablo_sarki_takip_edilen.getColumnModel().getColumnCount() > 0) {
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(0).setResizable(false);
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(1).setResizable(false);
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(2).setResizable(false);
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(3).setResizable(false);
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(4).setResizable(false);
+            tablo_sarki_takip_edilen.getColumnModel().getColumn(5).setResizable(false);
+        }
+
+        panel_takip.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 40, 480, 310));
+
+        tablo_kullanici_takip_edilen.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Ad", "Email", "Abonelik Tür", "Ülke"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablo_kullanici_takip_edilen.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tablo_kullanici_takip_edilenMouseClicked(evt);
+            }
+        });
+        jScrollPane6.setViewportView(tablo_kullanici_takip_edilen);
+        if (tablo_kullanici_takip_edilen.getColumnModel().getColumnCount() > 0) {
+            tablo_kullanici_takip_edilen.getColumnModel().getColumn(0).setResizable(false);
+            tablo_kullanici_takip_edilen.getColumnModel().getColumn(1).setResizable(false);
+            tablo_kullanici_takip_edilen.getColumnModel().getColumn(2).setResizable(false);
+            tablo_kullanici_takip_edilen.getColumnModel().getColumn(3).setResizable(false);
+        }
+
+        panel_takip.add(jScrollPane6, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 430, 510, 250));
+
+        mesaj_panel_takip.setForeground(new java.awt.Color(255, 51, 51));
+        panel_takip.add(mesaj_panel_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 340, 240, 50));
+
+        buton_pop_takip.setText("Pop");
+        buton_pop_takip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_pop_takipActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_pop_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 50, 110, 50));
+
+        buton_jazz_takip.setText("jazz");
+        buton_jazz_takip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_jazz_takipActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_jazz_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 120, 110, 40));
+
+        buton_klasik_takip.setText("klasik");
+        buton_klasik_takip.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_klasik_takipActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_klasik_takip, new org.netbeans.lib.awtextra.AbsoluteConstraints(1150, 180, 110, 40));
+
+        jLabel1.setText("KULLANICILAR");
+        panel_takip.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 10, 80, 30));
+
+        jLabel2.setText("TAKİP EDİLEN KULLANICILAR");
+        panel_takip.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 404, 240, 20));
+
+        buton_takipten_cik.setText("Takipten Çık");
+        buton_takipten_cik.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buton_takipten_cikActionPerformed(evt);
+            }
+        });
+        panel_takip.add(buton_takipten_cik, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 470, 200, 80));
+
+        onceki_menu.setText("ONCEKİ MENU");
+        onceki_menu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                onceki_menuActionPerformed(evt);
+            }
+        });
+        panel_takip.add(onceki_menu, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 580, 210, 90));
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panel_kullanici, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 348, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(panel_takip, javax.swing.GroupLayout.PREFERRED_SIZE, 1400, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 282, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(panel_kullanici, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 180, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(panel_takip, javax.swing.GroupLayout.PREFERRED_SIZE, 800, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 128, Short.MAX_VALUE)))
+        );
+
+        pack();
+    }// </editor-fold>                        
+
+    private void button_popActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        LabelListeTur.setText("");
+        LabelListeTur.setText(" KULLANICI POP");
+        sarkiGoruntule("pop");
+        liste_turu_kullanici = "pop";
+
+    }                                          
+
+    private void button_jazzActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        LabelListeTur.setText("");
+        LabelListeTur.setText("KULLANICI JAZZ");
+        sarkiGoruntule("jazz");
+        liste_turu_kullanici = "jazz";
+    }                                           
+
+    private void button_klasikActionPerformed(java.awt.event.ActionEvent evt) {                                              
+        LabelListeTur.setText("");
+        LabelListeTur.setText("KULLANICI KLASIK");
+        sarkiGoruntule("klasik");
+        liste_turu_kullanici = "klasik";
+    }                                             
+
+    private void tablo_kullanıcıMouseClicked(java.awt.event.MouseEvent evt) {                                             
+        int selectRow = tablo_kullanıcı.getSelectedRow();
+        String sarki_tablo = tablo_kullanıcı.getValueAt(selectRow, 0).toString();
+        String sanatci_tablo = tablo_kullanıcı.getValueAt(selectRow, 1).toString();
+        for (Sarki sarki : sarkilar) {
+            if (sarki.getSarki_adi().equals(sarki_tablo) && sarki.getSanatci_adi().equals(sanatci_tablo)) {
+                secili_sarki_id = sarki.getId();
+
+            }
+        }
+    }                                            
+
+    private void sarki_kaldirActionPerformed(java.awt.event.ActionEvent evt) {                                             
+        String tur = islemler.sarkiKaldir(kullanici_id, secili_sarki_id);
+        sarkiGoruntule(tur);
+    }                                            
+
+    private void sarki_ekleActionPerformed(java.awt.event.ActionEvent evt) {                                           
+        islemler.sarkiEkle(kullanici_id, secili_sarki_id);
+        sarkiGoruntuleTum();
+        String tur = islemler.seciliSarkiTur(secili_sarki_id);
+        sarkiGoruntule(tur);
+    }                                          
+
+    private void tablo_tum_sarkilarMouseClicked(java.awt.event.MouseEvent evt) {                                                
+        int selectRow = tablo_tum_sarkilar.getSelectedRow();
+        String sarki_tablo = tablo_tum_sarkilar.getValueAt(selectRow, 0).toString();
+        String sanatci_tablo = tablo_tum_sarkilar.getValueAt(selectRow, 1).toString();
+        for (Sarki sarki : sarkilar_tum) {
+            if (sarki.getSarki_adi().equals(sarki_tablo) && sarki.getSanatci_adi().equals(sanatci_tablo)) {
+                secili_sarki_id = sarki.getId();
+            }
+        }
+    }                                               
+
+    public void sarkiOynat() {
+        islemler.sarkiOynat(secili_sarki_id);
+        sarkiGoruntuleTum();
+        if (liste_turu_top_10 != null) {
+            if (!liste_turu_top_10.equals("")) {
+                if (liste_turu_top_10.equals("genel")) {
+                    sarkiGoruntuleTop10Genel();
+                } else if (liste_turu_top_10.equals("ABD")) {
+                    sarkiGoruntuleUlke(liste_turu_top_10);
+                } else if (liste_turu_top_10.equals("Türkiye")) {
+                    sarkiGoruntuleUlke(liste_turu_top_10);
+                } else {
+                    sarkiGoruntuleTur(liste_turu_top_10);
+                }
+            }
+        }
+        if (!liste_turu_kullanici.equals("")) {
+            sarkiGoruntule(liste_turu_kullanici);
+        }
+    }
+    public void takipCik(){
+        if(secili_kullanici_id_takip!=0){
+            islemler.takipCik(kullanici_id,secili_kullanici_id_takip);
+            kullaniciGoruntule(kullanici_id);
+        }
+    }
+    //***************************************
+    //***************TOP 10 LAR**************
+    //***************************************
+
+    private void buton_pop_top10ActionPerformed(java.awt.event.ActionEvent evt) {                                                
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 POP");
+        sarkiGoruntuleTur("pop");
+        liste_turu_top_10 = "pop";
+    }                                               
+
+    private void buton_jazz_top10ActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 -JAZZ");
+        sarkiGoruntuleTur("jazz");
+        liste_turu_top_10 = "jazz";
+    }                                                
+
+    private void buton_klasik_top10ActionPerformed(java.awt.event.ActionEvent evt) {                                                   
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 KLASİK");
+        sarkiGoruntuleTur("klasik");
+        liste_turu_top_10 = "klasik";
+    }                                                  
+
+    private void tablo_top10_turMouseClicked(java.awt.event.MouseEvent evt) {                                             
+        int selectRow = tablo_top10_tur.getSelectedRow();
+        String sarki_tablo = tablo_top10_tur.getValueAt(selectRow, 0).toString();
+        String sanatci_tablo = tablo_top10_tur.getValueAt(selectRow, 1).toString();
+        for (Sarki sarki : sarkilar_top10_tur) {
+            if (sarki.getSarki_adi().equals(sarki_tablo) && sarki.getSanatci_adi().equals(sanatci_tablo)) {
+                secili_sarki_id = sarki.getId();
+            }
+        }
+    }                                            
+
+    private void buton_top_10_trActionPerformed(java.awt.event.ActionEvent evt) {                                                
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 TR");
+        sarkiGoruntuleUlke("Türkiye");
+        liste_turu_top_10 = "Türkiye";
+    }                                               
+
+    private void buton_top_10_genelActionPerformed(java.awt.event.ActionEvent evt) {                                                   
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 GENEL");
+        sarkiGoruntuleTop10Genel();
+        liste_turu_top_10 = "genel";
+    }                                                  
+
+    private void buton_top_10_abdActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        Label_top10_tur.setText("");
+        Label_top10_tur.setText(" TOP 10 ABD");
+        sarkiGoruntuleUlke("ABD");
+        liste_turu_top_10 = "ABD";
+    }                                                
+
+    private void buton_oynatActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        sarkiOynat();
+    }                                           
+
+    private void buton_takip_panelActionPerformed(java.awt.event.ActionEvent evt) {                                                  
+        panel_kullanici.setFocusable(false);
+        panel_kullanici.setVisible(false);
+
+        panel_takip.setVisible(true);
+        panel_takip.setFocusable(true);
+    }                                                 
+
+    private void tablo_kullaniciMouseClicked(java.awt.event.MouseEvent evt) {                                             
+        int selectRow = tablo_kullanici.getSelectedRow();
+        String email = tablo_kullanici.getValueAt(selectRow, 1).toString();
+        for (Kullanici kullanici : kullanicilar) {
+            if (kullanici.getEmail().equals(email)) {
+                secili_kullanici_id = kullanici.getId();
+                secili_kullanici_tur = kullanici.getAbonelik_tur();
+            }
+        }
+    }                                            
+
+    private void buton_takipActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        takipEt();
+    }                                           
+
+    private void buton_pop_takipActionPerformed(java.awt.event.ActionEvent evt) {                                                
+        sarkiGoruntuleTakip("pop");
+    }                                               
+
+    private void tablo_kullanici_takip_edilenMouseClicked(java.awt.event.MouseEvent evt) {                                                          
+        int selectRow = tablo_kullanici_takip_edilen.getSelectedRow();
+        String email = tablo_kullanici_takip_edilen.getValueAt(selectRow, 1).toString();
+        for (Kullanici kullanici : kullanicilar_pre) {
+            if (kullanici.getEmail().equals(email)) {
+                secili_kullanici_id_takip = kullanici.getId();
+                secili_kullanici_tur_takip = kullanici.getAbonelik_tur();
+            }
+        }
+    }                                                         
+
+    private void buton_jazz_takipActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        sarkiGoruntuleTakip("jazz");
+    }                                                
+
+    private void buton_klasik_takipActionPerformed(java.awt.event.ActionEvent evt) {                                                   
+        sarkiGoruntuleTakip("klasik");
+    }                                                  
+
+    private void buton_takipten_cikActionPerformed(java.awt.event.ActionEvent evt) {                                                   
+        takipCik();
+    }                                                  
+
+    private void onceki_menuActionPerformed(java.awt.event.ActionEvent evt) {                                            
+        panel_takip.setFocusable(false);
+        panel_takip.setVisible(false);
+        
+        panel_kullanici.setVisible(true);
+        panel_kullanici.setVisible(true);
+    }                                           
+
+    private void buton_ekle_takipActionPerformed(java.awt.event.ActionEvent evt) {                                                 
+        islemler.sarkiEkle(kullanici_id,secili_sarki_id_takip);     
+    }                                                
+
+    private void tablo_sarki_takip_edilenMouseClicked(java.awt.event.MouseEvent evt) {                                                      
+        int selectRow = tablo_sarki_takip_edilen.getSelectedRow();
+        String sarki_tablo = tablo_sarki_takip_edilen.getValueAt(selectRow, 0).toString();
+        String sanatci_tablo = tablo_sarki_takip_edilen.getValueAt(selectRow, 1).toString();
+        for (Sarki sarki : sarkilar_takip) {
+            if (sarki.getSarki_adi().equals(sarki_tablo) && sarki.getSanatci_adi().equals(sanatci_tablo)) {
+                secili_sarki_id_takip = sarki.getId();
+            }
+        }
+    }                                                     
+    //***************************************
+    //***************TOP 10 LAR**************
+    //***************************************
+
+    public static void main(String args[]) {
+
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(KullaniciArayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(KullaniciArayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(KullaniciArayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(KullaniciArayuz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new KullaniciArayuz().setVisible(true);
+            }
+        });
+
+    }
+
+    // Variables declaration - do not modify                     
+    private javax.swing.JLabel LabelListeTur;
+    private javax.swing.JLabel LabelTumSarkilar;
+    private javax.swing.JLabel Label_top10_tur;
+    private javax.swing.JButton buton_ekle_takip;
+    private javax.swing.JButton buton_jazz_takip;
+    private javax.swing.JButton buton_jazz_top10;
+    private javax.swing.JButton buton_klasik_takip;
+    private javax.swing.JButton buton_klasik_top10;
+    private javax.swing.JButton buton_oynat;
+    private javax.swing.JButton buton_pop_takip;
+    private javax.swing.JButton buton_pop_top10;
+    private javax.swing.JButton buton_takip;
+    private javax.swing.JButton buton_takip_panel;
+    private javax.swing.JButton buton_takipten_cik;
+    private javax.swing.JButton buton_top_10_abd;
+    private javax.swing.JButton buton_top_10_genel;
+    private javax.swing.JButton buton_top_10_tr;
+    private javax.swing.JButton button_jazz;
+    private javax.swing.JButton button_klasik;
+    private javax.swing.JButton button_pop;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JLabel mesaj_panel_takip;
+    private javax.swing.JButton onceki_menu;
+    private javax.swing.JPanel panel_kullanici;
+    private javax.swing.JPanel panel_takip;
+    private javax.swing.JButton sarki_ekle;
+    private javax.swing.JButton sarki_kaldir;
+    private javax.swing.JTable tablo_kullanici;
+    private javax.swing.JTable tablo_kullanici_takip_edilen;
+    private javax.swing.JTable tablo_kullanıcı;
+    private javax.swing.JTable tablo_sarki_takip_edilen;
+    private javax.swing.JTable tablo_top10_tur;
+    private javax.swing.JTable tablo_tum_sarkilar;
+    // End of variables declaration                   
+}
+
+
+-----------------------------------------------------------
+
+public class Sanatci {
+    
+    private int id;
+    private String ad;
+    private String ulke;
+
+    public Sanatci(int id, String ad, String ulke) {
+        this.id = id;
+        this.ad = ad;
+        this.ulke = ulke;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getAd() {
+        return ad;
+    }
+
+    public void setAd(String ad) {
+        this.ad = ad;
+    }
+
+    public String getUlke() {
+        return ulke;
+    }
+
+    public void setUlke(String ulke) {
+        this.ulke = ulke;
+    }
+    
+    
+    
+}
+
+
+---------------------------------------------------
+
+
+public class Sarki {
+    private int id;
+    
+    private String sarki_adi;
+    
+    private int tarih;
+    private String ad;
+    private String sanatci_adi;
+    private int sanatci_id;
+    
+    private int album_id;
+    private String album_adi;
+    
+    private int tur_id;
+    private String tur_adi;
+    
+    private int sanatciId;
+    private String sanatciAd;
+    private int turId;
+    private String turAd;
+    private int albumId;
+    private String albumAd;
+    private int dinlenme;
+    private float sure;
+    
+    
+    private int dinlenme_sayisi;
+    
+    public Sarki(int id,String sarki_adi,String sanatci_adi,String album_adi,float sure,int dinlenme_sayisi){
+        this.id=id;
+        this.sarki_adi=sarki_adi;
+        this.sanatci_adi=sanatci_adi;
+        this.album_adi=album_adi;
+        this.sure=sure;
+        this.dinlenme_sayisi=dinlenme_sayisi;
+    }
+    public Sarki(int id,String sarki_adi,String sanatci_adi,String album_adi,float sure,int dinlenme_sayisi,String tur_adi){
+        this.id=id;
+        this.sarki_adi=sarki_adi;
+        this.sanatci_adi=sanatci_adi;
+        this.album_adi=album_adi;
+        this.sure=sure;
+        this.dinlenme_sayisi=dinlenme_sayisi;
+        this.tur_adi=tur_adi;
+    }
+    
+    public Sarki(int id, String ad, int tarih, String sanatciAd, String turAd, String albumAd, int dinlenme, float sure) {
+        this.id = id;
+        this.ad = ad;
+        this.tarih = tarih;
+        this.sanatciAd = sanatciAd;
+        this.turAd = turAd;
+        this.albumAd = albumAd;
+        this.dinlenme = dinlenme;
+        this.sure = sure;
+    }
+
+    public String getTur_adi() {
+        return tur_adi;
+    }
+
+    public void setTur_adi(String tur_adi) {
+        this.tur_adi = tur_adi;
+    }
+
+    public Sarki(int id, String sarki_adi, int tarih, String sanatci_adi, int sanatci_id, int album_id, String album_adi, int tur_id, String tur_adi, float sure, int dinlenme_sayisi) {
+        this.id = id;
+        this.sarki_adi = sarki_adi;
+        this.tarih = tarih;
+        this.sanatci_adi = sanatci_adi;
+        this.sanatci_id = sanatci_id;
+        this.album_id = album_id;
+        this.album_adi = album_adi;
+        this.tur_id = tur_id;
+        this.tur_adi = tur_adi;
+        this.sure = sure;
+        this.dinlenme_sayisi = dinlenme_sayisi;
+    }
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getSarki_adi() {
+        return sarki_adi;
+    }
+
+    public void setSarki_adi(String sarki_adi) {
+        this.sarki_adi = sarki_adi;
+    }
+
+    public String getSanatci_adi() {
+        return sanatci_adi;
+    }
+
+    public void setSanatci_adi(String sanatci_adi) {
+        this.sanatci_adi = sanatci_adi;
+    }
+
+    public String getAlbum_adi() {
+        return album_adi;
+    }
+
+    public void setAlbum_adi(String album_adi) {
+        this.album_adi = album_adi;
+    }
+
+    public float getSure() {
+        return sure;
+    }
+
+    public void setSure(float sure) {
+        this.sure = sure;
+    }
+
+    public int getDinlenme_sayisi() {
+        return dinlenme_sayisi;
+    }
+
+    public void setDinlenme_sayisi(int dinlenme_sayisi) {
+        this.dinlenme_sayisi = dinlenme_sayisi;
+    }
+    
+    
+
+    public String getAd() {
+        return ad;
+    }
+
+    public void setAd(String ad) {
+        this.ad = ad;
+    }
+
+    public int getTarih() {
+        return tarih;
+    }
+
+    public void setTarih(int tarih) {
+        this.tarih = tarih;
+    }
+
+    public int getSanatciId() {
+        return sanatciId;
+    }
+
+    public void setSanatciId(int sanatciId) {
+        this.sanatciId = sanatciId;
+    }
+
+    public String getSanatciAd() {
+        return sanatciAd;
+    }
+
+    public void setSanatciAd(String sanatciAd) {
+        this.sanatciAd = sanatciAd;
+    }
+
+    public int getTurId() {
+        return turId;
+    }
+
+    public void setTurId(int turId) {
+        this.turId = turId;
+    }
+
+    public String getTurAd() {
+        return turAd;
+    }
+
+    public void setTurAd(String turAd) {
+        this.turAd = turAd;
+    }
+
+    public int getAlbumId() {
+        return albumId;
+    }
+
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
+    }
+
+    public String getAlbumAd() {
+        return albumAd;
+    }
+
+    public void setAlbumAd(String albumAd) {
+        this.albumAd = albumAd;
+    }
+
+    public int getDinlenme() {
+        return dinlenme;
+    }
+
+    public void setDinlenme(int dinlenme) {
+        this.dinlenme = dinlenme;
+    }
+
+    
+    
+}
